@@ -1,0 +1,1140 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "dad41f8f-107e-42aa-bea2-10e0396a54ed",
+   "metadata": {},
+   "source": [
+    "## Export Attention Images - Harry Potter"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "d812c072-b3f6-4131-9cce-ab0eacc2238f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "%pylab is deprecated, use %matplotlib inline and import the required libraries.\n",
+      "Populating the interactive namespace from numpy and matplotlib\n"
+     ]
+    }
+   ],
+   "source": [
+    "%pylab inline"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "052eb7b6-3c05-4611-83e1-f157e8f9c968",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import transformer_lens\n",
+    "import torch.nn as nn\n",
+    "import einops\n",
+    "from jaxtyping import Float, Int\n",
+    "import torch as t\n",
+    "from torch import Tensor\n",
+    "from dataclasses import dataclass\n",
+    "import os, shutil"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "dccba9ec-943d-46b8-9a81-a5d4207e625e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "output_dir='gpt_2_attention_viz_harry_potter'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f28415d9-9aaa-47ac-b1db-915c99868167",
+   "metadata": {},
+   "source": [
+    "```\n",
+    "rsync -auv stephen@dev-3:/home/stephen/deepseek /Users/stephen/Dropbox/welch_labs/deepseek/hackin/linux_workdir --exclude DeepSeek-V3\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "f2d3e13f-ead3-43fc-9be9-d9e155c3b15d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# if os.path.exists(output_dir):\n",
+    "#     shutil.rmtree(output_dir)\n",
+    "# os.makedirs(output_dir)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "85a6ce70-8cd8-426c-9878-afe28d8d7ac7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sys.path.append('/home/stephen/deepseek/ARENA_3.0-main/chapter1_transformer_interp/exercises')\n",
+    "import part1_transformer_from_scratch.tests as tests"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "c76f2017-ece8-44c7-89a8-481cdfe42b22",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Loaded pretrained model gpt2-small into HookedTransformer\n"
+     ]
+    }
+   ],
+   "source": [
+    "device='cuda'\n",
+    "model = transformer_lens.HookedTransformer.from_pretrained(\"gpt2-small\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "28602725-76c8-40b4-b65c-2ccebd1734af",
+   "metadata": {},
+   "source": [
+    "### Start with 10 tokens, cut down as needed for viz to work"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "720890d6-710e-40a7-b5e0-8d612a6d6c53",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# reference_text = \"The American flag is red, white, and\"\n",
+    "# reference_text = \"The American flag is red, white, and\"\n",
+    "reference_text = \"Mr. and Mrs. Dursley, of number four, Privet Drive, were proud to say that they were perfectly normal, thank you very much. They were the last people you'd expect to be involved in anything strange or mysterious, because they just didn't hold with such nonsense. Mr. Dursley was the director of a firm called Grunnings\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "49151006-e54c-4d02-9006-a8abf4622152",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "torch.Size([1, 75, 50257])"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "tokens = model.to_tokens(reference_text).to(device)\n",
+    "logits, cache = model.run_with_cache(tokens)\n",
+    "logits.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "9dcf04e9-5092-457a-828f-7a7a00e55409",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def load_gpt2_test(cls, gpt2_layer, input):\n",
+    "    cfg = Config(debug=True)\n",
+    "    layer = cls(cfg).to(device)\n",
+    "    layer.load_state_dict(gpt2_layer.state_dict(), strict=False)\n",
+    "    print(\"Input shape:\", input.shape)\n",
+    "    output = layer(input)\n",
+    "    if isinstance(output, tuple):\n",
+    "        output = output[0]\n",
+    "    print(\"Output shape:\", output.shape)\n",
+    "    try:\n",
+    "        reference_output = gpt2_layer(input)\n",
+    "    except:\n",
+    "        reference_output = gpt2_layer(input, input, input)\n",
+    "    print(\"Reference output shape:\", reference_output.shape, \"\\n\")\n",
+    "    comparison = t.isclose(output, reference_output, atol=1e-4, rtol=1e-3)\n",
+    "    print(f\"{comparison.sum()/comparison.numel():.2%} of the values are correct\\n\")\n",
+    "    assert 1 - (comparison.sum() / comparison.numel()) < 1e-5, \"More than 0.01% of the values are incorrect\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "e837a39e-9312-4221-87d7-88f7ae4305a6",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Config(d_model=768, debug=True, layer_norm_eps=1e-05, d_vocab=50257, init_range=0.02, n_ctx=1024, d_head=64, d_mlp=3072, n_heads=12, n_layers=12)\n"
+     ]
+    }
+   ],
+   "source": [
+    "@dataclass\n",
+    "class Config:\n",
+    "    d_model: int = 768\n",
+    "    debug: bool = True\n",
+    "    layer_norm_eps: float = 1e-5\n",
+    "    d_vocab: int = 50257\n",
+    "    init_range: float = 0.02\n",
+    "    n_ctx: int = 1024\n",
+    "    d_head: int = 64\n",
+    "    d_mlp: int = 3072\n",
+    "    n_heads: int = 12\n",
+    "    n_layers: int = 12\n",
+    "\n",
+    "\n",
+    "cfg = Config()\n",
+    "print(cfg)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "c3b080f2-77ad-43fc-a68f-948fb07a7668",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Input shape: torch.Size([1, 75, 768])\n",
+      "Output shape: torch.Size([1, 75, 768])\n",
+      "Reference output shape: torch.Size([1, 75, 768]) \n",
+      "\n",
+      "100.00% of the values are correct\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "class Attention(nn.Module):\n",
+    "    IGNORE: Float[Tensor, \"\"]\n",
+    "\n",
+    "    def __init__(self, cfg: Config):\n",
+    "        super().__init__()\n",
+    "        self.cfg = cfg\n",
+    "        self.W_Q = nn.Parameter(t.empty((cfg.n_heads, cfg.d_model, cfg.d_head)))\n",
+    "        self.W_K = nn.Parameter(t.empty((cfg.n_heads, cfg.d_model, cfg.d_head)))\n",
+    "        self.W_V = nn.Parameter(t.empty((cfg.n_heads, cfg.d_model, cfg.d_head)))\n",
+    "        self.W_O = nn.Parameter(t.empty((cfg.n_heads, cfg.d_head, cfg.d_model)))\n",
+    "        self.b_Q = nn.Parameter(t.zeros((cfg.n_heads, cfg.d_head)))\n",
+    "        self.b_K = nn.Parameter(t.zeros((cfg.n_heads, cfg.d_head)))\n",
+    "        self.b_V = nn.Parameter(t.zeros((cfg.n_heads, cfg.d_head)))\n",
+    "        self.b_O = nn.Parameter(t.zeros((cfg.d_model)))\n",
+    "        nn.init.normal_(self.W_Q, std=self.cfg.init_range)\n",
+    "        nn.init.normal_(self.W_K, std=self.cfg.init_range)\n",
+    "        nn.init.normal_(self.W_V, std=self.cfg.init_range)\n",
+    "        nn.init.normal_(self.W_O, std=self.cfg.init_range)\n",
+    "        self.register_buffer(\"IGNORE\", t.tensor(float(\"-inf\"), dtype=t.float32, device=device))\n",
+    "\n",
+    "    def forward(self, normalized_resid_pre: Float[Tensor, \"batch posn d_model\"]) -> Float[Tensor, \"batch posn d_model\"]:\n",
+    "        # Calculate query, key and value vectors\n",
+    "        q = (\n",
+    "            einops.einsum(\n",
+    "                normalized_resid_pre, self.W_Q, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    "            )\n",
+    "            + self.b_Q\n",
+    "        )\n",
+    "        k = (\n",
+    "            einops.einsum(\n",
+    "                normalized_resid_pre, self.W_K, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    "            )\n",
+    "            + self.b_K\n",
+    "        )\n",
+    "        v = (\n",
+    "            einops.einsum(\n",
+    "                normalized_resid_pre, self.W_V, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    "            )\n",
+    "            + self.b_V\n",
+    "        )\n",
+    "\n",
+    "        # Calculate attention scores, then scale and mask, and apply softmax to get probabilities\n",
+    "        attn_scores = einops.einsum(\n",
+    "            q, k, \"batch posn_Q nheads d_head, batch posn_K nheads d_head -> batch nheads posn_Q posn_K\"\n",
+    "        )\n",
+    "        attn_scores_masked = self.apply_causal_mask(attn_scores / self.cfg.d_head**0.5)\n",
+    "        attn_pattern = attn_scores_masked.softmax(-1)\n",
+    "\n",
+    "        # Take weighted sum of value vectors, according to attention probabilities\n",
+    "        z = einops.einsum(\n",
+    "            v, attn_pattern, \"batch posn_K nheads d_head, batch nheads posn_Q posn_K -> batch posn_Q nheads d_head\"\n",
+    "        )\n",
+    "\n",
+    "        # Calculate output (by applying matrix W_O and summing over heads, then adding bias b_O)\n",
+    "        attn_out = (\n",
+    "            einops.einsum(z, self.W_O, \"batch posn_Q nheads d_head, nheads d_head d_model -> batch posn_Q d_model\")\n",
+    "            + self.b_O\n",
+    "        )\n",
+    "\n",
+    "        return attn_out\n",
+    "\n",
+    "    def apply_causal_mask(\n",
+    "        self, attn_scores: Float[Tensor, \"batch n_heads query_pos key_pos\"]\n",
+    "    ) -> Float[Tensor, \"batch n_heads query_pos key_pos\"]:\n",
+    "        \"\"\"\n",
+    "        Applies a causal mask to attention scores, and returns masked scores.\n",
+    "        \"\"\"\n",
+    "        # Define a mask that is True for all positions we want to set probabilities to zero for\n",
+    "        all_ones = t.ones(attn_scores.size(-2), attn_scores.size(-1), device=attn_scores.device)\n",
+    "        mask = t.triu(all_ones, diagonal=1).bool()\n",
+    "        # Apply the mask to attention scores, then return the masked scores\n",
+    "        attn_scores.masked_fill_(mask, self.IGNORE)\n",
+    "        return attn_scores\n",
+    "\n",
+    "\n",
+    "# tests.test_causal_mask(Attention.apply_causal_mask)\n",
+    "# rand_float_test(Attention, [2, 4, 768])\n",
+    "load_gpt2_test(Attention, model.blocks[0].attn, cache[\"normalized\", 0, \"ln1\"])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "f8b498f2-fe65-469f-93c8-8b05e6691432",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "100.00% of the values are correct\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "cfg = Config(debug=True)\n",
+    "layer = Attention(cfg).to(device)\n",
+    "layer.load_state_dict(model.blocks[0].attn.state_dict(), strict=False);\n",
+    "\n",
+    "output = layer(cache[\"normalized\", 0, \"ln1\"])\n",
+    "reference_output = model.blocks[0].attn(cache[\"normalized\", 0, \"ln1\"], cache[\"normalized\", 0, \"ln1\"], cache[\"normalized\", 0, \"ln1\"])\n",
+    "\n",
+    "comparison = t.isclose(output, reference_output, atol=1e-4, rtol=1e-3)\n",
+    "print(f\"{comparison.sum()/comparison.numel():.2%} of the values are correct\\n\")\n",
+    "assert 1 - (comparison.sum() / comparison.numel()) < 1e-5, \"More than 0.01% of the values are incorrect\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "d5cbb24c-8160-4382-904b-9bb58f0203dd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "layer_id=2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "64e2d33e-1d73-40fa-a2c3-7dea1b549fd2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "cfg = Config(debug=True)\n",
+    "layer = Attention(cfg).to(device)\n",
+    "layer.load_state_dict(model.blocks[layer_id].attn.state_dict(), strict=False);"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "daf6130e-82dd-429e-8c9a-95de30c9b689",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "W_Q=layer.W_Q \n",
+    "W_K=layer.W_K\n",
+    "W_V=layer.W_V\n",
+    "W_O=layer.W_O \n",
+    "b_Q=layer.b_Q\n",
+    "b_K=layer.b_K \n",
+    "b_V=layer.b_V \n",
+    "b_O=layer.b_O"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "e1f9b90d-82e7-440b-902d-9d4ceec8129d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(torch.Size([12, 768, 64]),\n",
+       " torch.Size([12, 768, 64]),\n",
+       " torch.Size([12, 768, 64]),\n",
+       " torch.Size([12, 64, 768]))"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "W_Q.shape, W_K.shape, W_V.shape, W_O.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "d8ca5581-8671-4414-a4d8-d69a328e525f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "normalized_resid_pre=cache[\"normalized\", layer_id, \"ln1\"] #This i think?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "2a9c1f98-23f0-4f42-ac17-548ad9b6fb6e",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "torch.Size([1, 75, 768])"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "normalized_resid_pre.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "7983a672-8469-4532-8a6c-15214311fa0c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAACwAAAGFCAYAAACG4BGTAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvlHJYcgAAAAlwSFlzAAAPYQAAD2EBqD+naQAACiRJREFUeJztnWts1XcZx8/p6f1CS2npBVpK6RwFCu1krMtWNtdJjARDtnnBaIwXEo1L1BlN1HcSo2YxJLwyM3NRoy6uZOjmooawscgQbWFQpFAubUe5tD2l957T6/H12eefnMcmTzhP8nxffnPO+X36pN/8/v/fNZxIJBIhQ8q43wD/rxxYWw6sLQfWljngTOkHN7z0IrySi/z6eMs8vNpjrEt4if3Vu29+PyWHuQo7sLbMAYtDl1UShxdeKoCXfScL3uBTDFiilOGUyFyFHVhb5oDFoTvQ2AXvt/ceg5d7lz+5XLkAr+h8Lhv5YmoOcxV2YG2ZAxaH7tXLH4VXdZJ/b8O3L8J7f2gdvKWcbGnTSTJXYQfWljlgceiqVk/CG68ohHfq9BZ4y0VL8LKbp6VNJ8lchR1YW+aAxaEbvFAJL2t1wAfL52DlXcmDt/eZTmnTSTJXYQfWljlgceg2dczC6z3IR8TwGL2de/nI2VZ0Rdp0ksxV2IG1ZQ5YHLrbj/NRMjzDx8ZPt52B9+erTfC6h6vh7d+UmsNchR1YW+aAxaGLPcSeLv98Pryjl1rgRfo5UlnWOihtOknmKuzA2jIHLA7dD1r+Bu9wbju8cJzzdKGGGVjT8z56mZ5yYG2JQ/fXET4ibq+4Da//yIPwhlr5e3cncqRNJ8lchR1YW+aAxaHrja6F93D1B/CGH+Z3i6+E4Y03RqRNJ8lchR1YW+aAxaELWtp/8sxWfq50Ed5UHR85axvvSptOkrkKO7C2zAGLQ/fjpjfgfe/OAXjlFRPw4hfL4f2s4WhAK1xU/WGZq7ADa8scsDh0BRmc9M6p4Ihm7aoxeBfKyuCNLnOxtETmKuzA2jIHLA7dC698FV7tT96Dd+4wR01yYnyn64jy5W9ffWoOcxV2YG2ZAxaHrrZ9AN714kfhJdawR4wVcNDkYrRK2nSSzFXYgbVlDlgcumtna+AtBS1kzuFAykLAIEz0TrG06SSZq7ADa8scsHztZYtsBclIB8M5tosbVvv2/irg275z/P7LgbUlDl11AUcl3+neDK9i3wgbCRi9bPj9N+Dd+G5qDnMVdmBtmQMWh67rNa5I2XfgP/De/hMHSJarl+ElslZ2ppe5CjuwtswBi0OX+xR7sOP9XPK1WMowZU5z9HK+iu9+EpmrsANryxywOHQjt0poLjNM4Xz2apnlPNQo5Gsv01QOrC1x6CKTHPZfLucASSKDn1tTwqMZhhdXVitzFXZgbZkDFofuK3vehnd2giOVA79+AN7dRCm8x5quSptOkrkKO7C2zAGLQze2yA2rN/7AgOVP8fEynEPvVDe/GwrYAvRhmauwA2vLHLA4dG/18ZSv2R2cHB9jvkKRUe4yqNw6LG06SeYq7MDaMgcsDt3sBE/0Kunm16fqmbqglStzi+Kmk2Suwg6sLXPA4v/80n+xtyr5DFepTHfxYNlIIU94nlv0TazpKQfWljh0O7/2PrzOl5vhLW1jT7dx7T14A+cYTonMVdiBtWUOWBy6njEeNjtbxXm6omvswW7kVMAL5wW8/AlkrsIOrC1zwOLQTcU5mT1Xyne1+VUMYmiJXiKP35XIXIUdWFvmgMWhmxjkVpyce+zVSh4Zgje3EHCPXX+JtOkkmauwA2vLHLB8RcoM/7Z4NQdIpgN6xHCY6zEzyrjZVSJzFXZgbZkDll8KOcFHxHXNXAQ9GC1hI5l8lEwEPHJKZK7CDqwtc8Di0L128Bfwnv0NN8AVNXOkcu7fXAZW1eZH8KWnHFhb4tB96vXvwMtqnIIX72LAwi2T8G718YQwicxV2IG1ZQ5YHLriXj4Orm7ibvKBzRxcCbq1oKaej6YSmauwA2vLHLA4dDO82SoUG+OIZtC7WmyUS8imszkII5G5CjuwtswBi0MXMAAZWrzOO+syAkoQqeGhtGNDq6RNJ//+ir51H+XA2jIHLA7d5iduwLtwoQ5eWT0HUkYGgu5JXpnMVdiBtWUOWBy6/qO8JjVjA5dyBR3rkDXO97yFcj8jJT3lwNqSLwPbFYNX2Ml3tVgl3+kWKvn+1riRd9tJZK7CDqwtc8Di0D3ZwOMVTsR57mWQ8q5z/HKonO+DEpmrsANryxywOHSn39wOL6+Z82+LV4vghQM2FMRPB8zT7U3NYa7CDqwtc8Di0MXW8R0s4yZ7q01vcKRysJ3XYsVqfMogPeXA2pJflbX77/AOd7bDS2SxBjVPfgDvao9vYk1PObC2xKH73YufhLf9y5xG6NlTD2/+KmfWMwN2LUhkrsIOrC1zwOLQjbbzlOZodx0/uIovcNlRThlU7bojbTpJ5irswNoyByzfT3czF175Q9ywOnmCxzq0Pnse3qm/7GAjT6fmMFdhB9aWOWBx6BbKOJBy++YaeOEt3Jx6PsrHy1g9j2SXyFyFHVhb5oDFocu5wyP46tp4JXLf6Vp4UwXsJUML/k6XnnJgbYlDV7+7H17/iTp487WcCijLY+8XzwgIokDmKuzA2jIHLA5dfiYfBxe3zPAHb/LOg/ECepECX3uZnnJgbclvYu3ZSDPC/T6FUa693PF4P7z3rnFqQSJzFXZgbZkDFofuwQYuUO7tWQ9vOeAXL77Ky0daP9sjbTpJ5irswNoyBywO3d1jG+CVzLOnqzzO+bfhJziN0H+EVyeHHk3NYa7CDqwtc8Dyw2a3coDk6eZL8M7kc/5tkUsvQxMr22Rgr8IOrC1zwPLJ8SKG7nh3Iz9Xxd5vOZerVBLZfpdBesqBtSUO3dI05+nyBujVf7wP3vArdfAiCwGHzR5MzWGuwg6sLXPA8oOJcnlKc2Seobv0X06OJ3YHzN1VcC+eROYq7MDaMgcsDl3ROU5mT9XxETG/ahpe5F0e1bfhIzzASCJzFXZgbZkDFodufQf3xPUc4r1zc3H2fuv33oL33NouadNJMldhB9aWOWBx6Ib21NCcZE/3TBvDdLSnGd6PhvbD+/wDqTnMVdiBtWUOWBy65YCz0ROZHKl8/TKnDJZibKZoDZeQSWSuwg6sLXPA8q09RRxtLKhkcGYm+O4XzmKPGI8F3XCQWuYq7MDaMgcsDl1GwB2Ok6NcyFz+T/5kdCdDFxnxXQbpKQfWljh0e750Gl5H505445/gaWCrC3lQbcU2jnJKZK7CDqwtc8Di0L3VwYWRmdsYsKCbRpb+wTMurzwSsDZMIHMVdmBtmQOWr0jhVeKhvE4+Xi4ErKmMVTKIR1r/GNDKD1NymKuwA2vLHLA4dNWnuIl18GOckyvu5XfnVnMQ5vl3vgBvn2CLnbkKO7C2zAGLQ3foly/B+9ZPvwmv+esX4J19mUeyhxIBay8FMldhB9aWOWD542XA35axPwrv8s+3wSt/nqtZZk9yf55E5irswNoyBxxOJBIBd6xSTS8chje1iYugE1n8ufwBZvu5z52Ed6jpWEoOcxV2YG2ZAxaHLl1krsIOrC0H1pYDa8uBtfU/thUp6beqloAAAAAASUVORK5CYII=",
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "x_numpy=normalized_resid_pre.detach().cpu().numpy()[0]\n",
+    "plt.imshow(x_numpy[1:,:5])\n",
+    "plt.axis('off')\n",
+    "plt.savefig(output_dir+'/input_1_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "54b36c41-70ab-42ec-8f0e-17278fe02be5",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(75, 768)"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x_numpy.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "3436299b-2465-4051-9c85-9038d7b48630",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAACIAAAGFCAYAAACYKSEgAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvlHJYcgAAAAlwSFlzAAAPYQAAD2EBqD+naQAAB3ZJREFUeJztnW1olXUYxs/OPJs7285x0+1o86W2bJbhTLFNrXwBlSyFxAyEohcwiCgsJTRKUYiiEAoJAjMMGkX04lIiUnKpOU3n5hy0qdt81zbPjnvR7Zjn9KU+dF8PnJt/R7w+3NfHiz1/fru4Pvyf8/yf+8lIJpNJH4H8txvgXxmIlIFIGYgUDcgQ7R/On7oevLyPLoNX31gGXsdLq1KuT5OIgUjRgKjL2rEGmdcWNYDXWDjaCYQmEQORogFRl9Xvxx3ljq4K8BKJDCcQmkQMRIoGRF3WMUuPg7f1XB14s7qfcQKhScRApGhA1GVN7B4D3mdXu8GLXgo7gdAkYiBSNCD6PesR3ItuCo0CLzSy1wmEJhEDkaIBUZd17uwG8FpiEfAuRENOIDSJGIgUDYi6rLv2edxMBRP4h1kenkI0iRiIFA2IuqxvLfwWvA0HHwevoLDPCYQmEQORogFRl3VD3SLwMrNuoufxE5dGNIkYiBQNiLqs78/4GryBZAC8jY0LnUBoEjEQKRoQdVnfqFmO5h0DYOXnoqcRTSIGIkUDoi7re4urwVtV+xR4AwHcGmhEk4iBSNGAqMu6um4pmh43/punYKl9vrdTrk+TiIFI0YCoy1r0czZ4SY9/Y9ukmeDNuyv1+jSJGIgUDYi+rC90gBcbyAEvkGG/s6ZHBiKlLuuKklrwVtbhnvVaHH8h0IgmEQORogFRl3V/3z3gZefcAK+i+IITCE0iBiJFA6Iu6462ieAlj+E5gAOJO/HiB1OvT5OIgUjRgKjLOjzvGnhnR+WCN3tshxMITSIGIkUDoi7rk6PrwWsI4xnX02twu+DbnXp9mkQMRIoGRF3WL89OBS9aNxK8snXtTiA0iRiIFA2Iuqxdh/HsanzcIHijcnqcQGgSMRApGhB1WectwG3A3vOl4LXEip1AaBIxECkaEHVZp4dOgrfzMB7IXjQdXyzUiCYRA5GiAVGX9fc+fGa6Zf6n4K1dvwK8d7alXp8mEQORogFRl3VhuBG815qWgRdc/qcTCE0iBiJFA6Iu65t/PAFeReQ8ePvr7sOLF6RenyYRA5GiAVGXtbsnCN6+U1jMlfN/9Lj69ZTr0yRiIFI0IOqyzirFG6xfovgIdsuJGeC9em/q9WkSMRApGhB1Wc/0F4DnH8S5VoNx9ZL/XcvpqlsgA5GiAVE362QbPq0KlV0FryB43QmEJhEDkaIB0U8R7MsE73rnMPCWPIa/GqjWd7rqFshApGhA1GV99KGj4NWew8HBv3be7QRCk4iBSNGAqMt6pEs3JLitFbcLvrmpr6NJxECkaEDUZQ1n4zyA+wsvgVfbMskJhCYRA5GiAVGXdUIYvx9Q04RnA5KRuBMITSIGIkUDoi7r9qOT0fSYyL6owm6w0iMDkdL/KBpH5pxifNXlhybcBmyeknp5mkQMRIoGRP9NgbJO8C5ewZHswVYchqERTSIGIkUD4va46R8Fg/imQMXiNqe1aBIxECkaEHVZo/14kKU/ihNZ6hP4EqFGNIkYiBQNiLqsj4w5BV5tEh8KHK/6wuPq9SnXp0nEQKRoQNRlPdFTBF5VyWnwlpycB973Hs8JpGgSMRApGhB1Wd8t/Qa8pT+9DN7IcVecQGgSMRApGhB1WZdtfwW8ymmt4NWftW+3pkcGIqXfs1Y1gxcO4HHAIc15TiA0iRiIFA2Iuqx7msvBm1iG72D5H8AzrhrRJGIgUjQg6rKum1kD3iftD4MXtsPXaZKBSOk/gFGN3xTI8pgUVLUcz71qRJOIgUjRgKjLenMofoytdzh6eZn4VEsjmkQMRIoGRF3Wqjl4g+X1/YCK3DNOIDSJGIgUDYi6rK3dOHCt5wB6h6aMBe9Zj5GtUjSJGIgUDYi6rLlZeKi6K4TbgOyExyFXhWgSMRApGhD9nnUTzmfNf7EbvMEbNjcgPTIQKXWzJm/0ersV32SdO+6EEwhNIgYiRQOiLmvNbzimPbMf/4+dF/ELLj68FESTiIFI0YCoyzqiNApeMIDfwZoTwfMCPt/qlOvTJGIgUjQg6rJ2XsJXWHIL8GnVnozxTiA0iRiIFA2IuqzlH2MxK7c2gFfdPM0JhCYRA5GiAdFPEVyDP0mtzccHBdU+K2t6ZCBS6rLG2/PBe37wOfCKCj0ODChEk4iBSNGAqMsaKscbrLxsfFAQv4nTBjWiScRApGhA1GWNteMw4YGSPvCyA385gdAkYiBSNCDqsj49ey94nx+eDl7lxBYnEJpEDESKBkRd1u/acSzQiAjuT/ccm4AX2yfcHWQgUuqy9sVwyMXQIixrfjFuDTSiScRApGhA/tf4oNH5MfCuxnFKi0Y0iRiIFA2IuqyRSAy8lk48z3qt28qaHhmIlLqsXlOuDw3iQWt/rx0RTI8MRErdrF3N+OW1ynKcGHjwss0NSI8MREr/CfdyHMx2oAkPrfgH3P43mkQMRIoGRF3W0734UCAQxadVJdMuOIHQJGIgUjQg6rJevDwMzRC+3frh+K88rv4g5fo0iRiIFA1IRjKZxLf+boNoEjEQKQORMhApA5H6GwIhVW5vN9ZRAAAAAElFTkSuQmCC",
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "plt.imshow(x_numpy[1:,-3:])\n",
+    "plt.axis('off')\n",
+    "plt.savefig(output_dir+'/input_2_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "4333f2d7-6748-4058-8c27-793f8eef6b25",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for head_id in range(12):\n",
+    "\n",
+    "    if os.path.exists(output_dir+'/'+str(head_id)):\n",
+    "        shutil.rmtree(output_dir+'/'+str(head_id))\n",
+    "    os.makedirs(output_dir+'/'+str(head_id))\n",
+    "    \n",
+    "    #There's more efficient ways to do this -> but this is one matrix multiply per head \n",
+    "    qs=[]\n",
+    "    for head_num in range(cfg.n_heads):\n",
+    "        qs.append(normalized_resid_pre[0] @ W_Q[head_num] +b_Q[head_num]) \n",
+    "    q=t.stack(qs, dim=0).unsqueeze(0).permute(0, 2, 1, 3) #Stack results together, add batch dimension, switch token and head dims.\n",
+    "    \n",
+    "    q_to_viz=q[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "    \n",
+    "    plt.clf()\n",
+    "    plt.imshow(q_to_viz)\n",
+    "    plt.axis('off')\n",
+    "    plt.savefig(output_dir+'/'+str(head_id)+'/q_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "    \n",
+    "    k = (\n",
+    "        einops.einsum(\n",
+    "            normalized_resid_pre, W_K, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    "        )\n",
+    "        + b_K\n",
+    "    )\n",
+    "    \n",
+    "    plt.clf()\n",
+    "    k_to_viz=k[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "    plt.imshow(k_to_viz)\n",
+    "    plt.axis('off')\n",
+    "    plt.savefig(output_dir+'/'+str(head_id)+'/k_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "\n",
+    "    v = (\n",
+    "    einops.einsum(\n",
+    "        normalized_resid_pre, W_V, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    "    )\n",
+    "    + b_V\n",
+    "    )\n",
+    "    \n",
+    "    v_to_viz=v[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "    plt.clf()\n",
+    "    plt.imshow(v_to_viz)\n",
+    "    plt.axis('off')\n",
+    "    plt.savefig(output_dir+'/'+str(head_id)+'/v_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "\n",
+    "    # Calculate attention scores, then scale and mask, and apply softmax to get probabilities\n",
+    "    attn_scores = einops.einsum(\n",
+    "        q, k, \"batch posn_Q nheads d_head, batch posn_K nheads d_head -> batch nheads posn_Q posn_K\"\n",
+    "    )\n",
+    "    \n",
+    "    attn_scores_masked = layer.apply_causal_mask(attn_scores / layer.cfg.d_head**0.5)\n",
+    "    attn_pattern = attn_scores_masked.softmax(-1)\n",
+    "\n",
+    "    plt.clf()\n",
+    "    attn_scores_to_viz=attn_scores[0,head_id,1:,1:].detach().cpu().numpy()\n",
+    "    plt.imshow(attn_scores_to_viz)\n",
+    "    plt.axis('off')\n",
+    "    plt.savefig(output_dir+'/'+str(head_id)+'/attention_scores.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "\n",
+    "    plt.clf()\n",
+    "    attn_pattern_to_viz=attn_pattern[0,head_id,1:,1:].detach().cpu().numpy()\n",
+    "    plt.imshow(attn_pattern_to_viz)\n",
+    "    plt.axis('off')\n",
+    "    plt.savefig(output_dir+'/'+str(head_id)+'/attention_pattern.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "\n",
+    "    zs=[]\n",
+    "    for head_num in range(cfg.n_heads):\n",
+    "        zs.append(attn_pattern[0, head_num, :, :] @ v[0, :, head_num, :])\n",
+    "\n",
+    "    plt.clf()\n",
+    "    z_to_viz=zs[head_id][1:, :].detach().cpu().numpy()\n",
+    "    plt.imshow(z_to_viz)\n",
+    "    plt.axis('off')\n",
+    "    plt.savefig(output_dir+'/'+str(head_id)+'/z_1.png', dpi=150, transparent=True, bbox_inches='tight')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f648b4ce-612a-4a33-b1de-3570433a98db",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "id": "5c63705e-e607-46de-87e6-f44d4e1f7a3d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "plt.clf()\n",
+    "plt.imshow(attn_pattern_to_viz[:60, :60])\n",
+    "# plt.show()\n",
+    "plt.axis('off')\n",
+    "plt.savefig(output_dir+'/'+'attention_pattern.svg', dpi=150, transparent=True, bbox_inches='tight')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a1089db2-e440-441d-8a9b-72c61112c434",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ccf9ee73-00f5-48e4-ae98-ff6c848c203c",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "939c8e6e-f07b-47a6-8aca-461ae741e4ec",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8f22b72d-899d-4d7e-adc2-ab03d2a40309",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "005456db-5132-4ff2-887b-e8decea9b38b",
+   "metadata": {},
+   "source": [
+    "### Export Queries and Keys as Separate Rows"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "68a2561f-3ee7-4df3-bf32-0f9f3d69067e",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(np.float64(-0.5), np.float64(63.5), np.float64(8.5), np.float64(-0.5))"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "head_id=0\n",
+    "\n",
+    "if os.path.exists(output_dir+'/'+str(head_id)):\n",
+    "    shutil.rmtree(output_dir+'/'+str(head_id))\n",
+    "os.makedirs(output_dir+'/'+str(head_id))\n",
+    "\n",
+    "#There's more efficient ways to do this -> but this is one matrix multiply per head \n",
+    "qs=[]\n",
+    "for head_num in range(cfg.n_heads):\n",
+    "    qs.append(normalized_resid_pre[0] @ W_Q[head_num] +b_Q[head_num]) \n",
+    "q=t.stack(qs, dim=0).unsqueeze(0).permute(0, 2, 1, 3) #Stack results together, add batch dimension, switch token and head dims.\n",
+    "\n",
+    "q_to_viz=q[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "\n",
+    "plt.clf()\n",
+    "plt.imshow(q_to_viz)\n",
+    "plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/'+str(head_id)+'/q_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "id": "4c6097ae-e971-4e6f-b9ec-228c10ec0bb2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(9, 64)"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "q_to_viz.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "id": "ed1bcf26-b692-42e2-b7a3-4e6cb3a7e536",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for row_to_viz in range(9):\n",
+    "    plt.clf()\n",
+    "    plt.imshow(q_to_viz[row_to_viz,:].reshape(1, 64))\n",
+    "    plt.axis('off')\n",
+    "    # plt.show()\n",
+    "    plt.savefig(output_dir+'/query_row_'+str(row_to_viz)+'.png', dpi=150, transparent=True, bbox_inches='tight')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 48,
+   "id": "9308a209-82cf-4b86-a4ad-610fb522b6bb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "k = (\n",
+    "    einops.einsum(\n",
+    "        normalized_resid_pre, W_K, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    "    )\n",
+    "    + b_K\n",
+    ")\n",
+    "\n",
+    "# plt.clf()\n",
+    "k_to_viz=k[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "# plt.imshow(k_to_viz)\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/'+str(head_id)+'/k_1.png', dpi=150, transparent=True, bbox_inches='tight')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "id": "ab863869-7056-46f2-a1e4-8cf8a3225f64",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for row_to_viz in range(9):\n",
+    "    plt.clf()\n",
+    "    plt.imshow(k_to_viz[row_to_viz,:].reshape(1, 64))\n",
+    "    plt.axis('off')\n",
+    "    # plt.show()\n",
+    "    plt.savefig(output_dir+'/key_row_'+str(row_to_viz)+'.png', dpi=150, transparent=True, bbox_inches='tight')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "id": "125b7b56-be49-4cd2-9591-e1990d732fe5",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAYUAAAGFCAYAAAASI+9IAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvlHJYcgAAAAlwSFlzAAAPYQAAD2EBqD+naQAABp5JREFUeJzt182qVmUch+G99XVLUn6UUQRBUQSRTQuMTqBh0AE0a1iTzqBJENEg6ASCoENoLlGUIw00DPpACiFQUffO19XsnsVawfvybOq6xv/Bj8WCm2d3mqZpBwB2dnaOjB4AwOEhCgBEFACIKAAQUQAgogBARAGAiAIAWS09fPm9j7e5YyOe/OTC6AkAh9ZXD76cvfFSACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAkNXSw72b0zZ3bMSVz14ZPWHWC+98M3oCwD/yUgAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoAJDV0sOz3/25zR0b8e0HX4yeMOuNj94cPWHW+uq10ROAQbwUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoAZLX0cDp+bJs7NuLtn18fPWHWrXOPj54w65HV0dETZq1/uDp6AvwneSkAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFADIaunh7t2/trljIy5/em70hFlnfrk1esKs+6dPjJ4w6/r750dPWOSpDy+MngD/ipcCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGArJYe7u4fbHPHRpy6dnf0hFlH7hz+73jjtcdGT5h1cGoaPWGRo88/O3rCrPWPP42ewCHipQBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBWSw9376+3uWMj9h/dGz1h1urG7dETZp39/uboCbMerE6OnrDIwdNnRk+YdfvVJ0ZPmHXq869HT/jf8FIAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKACQ1eLL++stztiMhy/+NnrCrOnevdETZt158bnRE2aduXIwesIie5d/HT1h1u9vPTN6wqzTl18aPWHWdPHS6Akb4aUAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgq6WH0739be7YjOnB6AWzpv2D0RNmHb9x+DeuTyz+dYfaPXZs9IRZD10//N9yfXJv9IRZf7x7fvSEjfBSACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAEFEAIKIAQEQBgIgCABEFACIKAEQUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFACIKAAQUQAgogBARAGAiAIAEQUAIgoARBQAiCgAkN1pmqbRIwA4HLwUAIgoABBRACCiAEBEAYCIAgARBQAiCgBEFADI39IyY5zYaVpRAAAAAElFTkSuQmCC",
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "\n",
+    "v = (\n",
+    "einops.einsum(\n",
+    "    normalized_resid_pre, W_V, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    ")\n",
+    "+ b_V\n",
+    ")\n",
+    "\n",
+    "v_to_viz=v[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "# plt.clf()\n",
+    "# plt.imshow(v_to_viz)\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/'+str(head_id)+'/v_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "\n",
+    "# Calculate attention scores, then scale and mask, and apply softmax to get probabilities\n",
+    "attn_scores = einops.einsum(\n",
+    "    q, k, \"batch posn_Q nheads d_head, batch posn_K nheads d_head -> batch nheads posn_Q posn_K\"\n",
+    ")\n",
+    "\n",
+    "attn_scores_masked = layer.apply_causal_mask(attn_scores / layer.cfg.d_head**0.5)\n",
+    "attn_pattern = attn_scores_masked.softmax(-1)\n",
+    "\n",
+    "# plt.clf()\n",
+    "# attn_scores_to_viz=attn_scores[0,head_id,1:,1:].detach().cpu().numpy()\n",
+    "# plt.imshow(attn_scores_to_viz)\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/'+str(head_id)+'/attention_scores.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "\n",
+    "plt.clf()\n",
+    "attn_pattern_to_viz=attn_pattern[0,head_id,1:,1:].detach().cpu().numpy()\n",
+    "plt.imshow(attn_pattern_to_viz)\n",
+    "plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/'+str(head_id)+'/attention_pattern.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e08f035c-e6db-487b-a1b1-8cc7047336f1",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c69cbcc6-4b44-4063-8993-6fb1ded53f62",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "09108c59-8afc-472a-ad38-6e1a4bbd52ff",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ffca7a3d-ee00-4207-b742-10e9d6f4b016",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8828343b-0083-4bdc-8994-b728fc60a3eb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "zs=[]\n",
+    "for head_num in range(cfg.n_heads):\n",
+    "    zs.append(attn_pattern[0, head_num, :, :] @ v[0, :, head_num, :])\n",
+    "\n",
+    "plt.clf()\n",
+    "z_to_viz=zs[head_id][1:, :].detach().cpu().numpy()\n",
+    "plt.imshow(z_to_viz)\n",
+    "plt.axis('off')\n",
+    "plt.savefig(output_dir+'/'+str(head_id)+'/z_1.png', dpi=150, transparent=True, bbox_inches='tight')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b085bc0e-9992-4808-ba1f-a3362f538366",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5c4e2f06-b637-4b4e-8208-911e1a145eac",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "81247e9c-d674-4d8c-9827-7430d1df24cb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "   # #There's more efficient ways to do this -> but this is one matrix multiply per head \n",
+    "   #  qs=[]\n",
+    "   #  for head_num in range(cfg.n_heads):\n",
+    "   #      qs.append(normalized_resid_pre[0] @ W_Q[head_num] +b_Q[head_num]) \n",
+    "   #  q=t.stack(qs, dim=0).unsqueeze(0).permute(0, 2, 1, 3) #Stack results together, add batch dimension, switch token and head dims.\n",
+    "    \n",
+    "   #  q_to_viz=q[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "    \n",
+    "   #  plt.clf()\n",
+    "   #  plt.imshow(q_to_viz)\n",
+    "   #  plt.axis('off')\n",
+    "   #  plt.savefig(output_dir+'/'+str(head_id)+'/q_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "    \n",
+    "   #  k = (\n",
+    "   #      einops.einsum(\n",
+    "   #          normalized_resid_pre, W_K, \"batch posn d_model, nheads d_model d_head -> batch posn nheads d_head\"\n",
+    "   #      )\n",
+    "   #      + b_K\n",
+    "   #  )\n",
+    "    \n",
+    "   #  plt.clf()\n",
+    "   #  k_to_viz=k[0,1:,head_id,:].detach().cpu().numpy()\n",
+    "   #  plt.imshow(k_to_viz)\n",
+    "   #  plt.axis('off')\n",
+    "   #  plt.savefig(output_dir+'/'+str(head_id)+'/k_1.png', dpi=150, transparent=True, bbox_inches='tight')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "edc9589b-371d-41a6-942b-3708110ee323",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e1457279-c0a5-411a-8fd8-31c1e3e20310",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c6ebdd8a-e629-4a3a-8ae0-3b407b5c05a1",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3e6d9af9-a9ab-46ad-9e8f-febf4683d2b4",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2cce117d-ec6c-4dbc-847b-adc1b562a8ff",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8863a5be-3947-4d35-9970-b868257c0d9e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# z_to_viz=z.detach().cpu().numpy()\n",
+    "# plt.imshow(z_to_viz)\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/z_all_heads_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "# plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cadc999a-cb96-4170-a21f-1b9a4933f333",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# z_to_viz=z.detach().cpu().numpy()\n",
+    "# plt.imshow(z_to_viz[:,:12])\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/z_all_heads_start_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "# plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "86805cd4-4187-4994-b270-02ad930370f3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# z_to_viz=z.detach().cpu().numpy()\n",
+    "# plt.imshow(z_to_viz[:, -8:])\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/z_all_heads_end_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "# plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cd5eba5d-5a49-443a-8f4c-4a88f05af61b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "attn_out.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "24e9d5df-0f4a-49de-9221-9060746c6fa5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# attn_out_to_viz=attn_out.detach().cpu().numpy()\n",
+    "# plt.imshow(attn_out_to_viz[:,:7])\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/attn_out_start_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "# plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fba91630-00c1-490d-af14-62beece26d54",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# attn_out_to_viz=attn_out.detach().cpu().numpy()\n",
+    "# plt.imshow(z_to_viz[:,:5])\n",
+    "# plt.axis('off')\n",
+    "# plt.savefig(output_dir+'/attn_out_end_1.png', dpi=150, transparent=True, bbox_inches='tight')\n",
+    "# plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b2407434-de63-406b-a065-7844adbaea39",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7d0deb55-9f63-4bb3-ad5e-babd76f4b102",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a44236d3-8fa6-41aa-a3fa-4bf4c01c84f5",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b4a5081d-616f-4146-99cc-e1cbb87639da",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0fc52438-03e5-4ba7-8419-6c30638558d1",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7b55b0a4-910b-4e86-b032-ff8f79fa21ef",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "77d925fd-37e1-4d0f-9031-33696ebcc734",
+   "metadata": {},
+   "source": [
+    "----"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "42d8f60c-a919-4e49-afc9-4589bf5a9372",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# token_string_list=model.to_str_tokens(tokens)\n",
+    "# attn_pattern=cache['blocks.10.attn.hook_pattern']\n",
+    "# fig=figure(0,(12,8))\n",
+    "# for i in range(12):\n",
+    "#     ax=fig.add_subplot(3,4,i+1)\n",
+    "#     plt.imshow(attn_pattern[0,i].detach().cpu().numpy())\n",
+    "#     ax.set_xticks(np.arange(len(token_string_list)))\n",
+    "#     ax.set_xticklabels(token_string_list)\n",
+    "#     plt.xticks(rotation=90)\n",
+    "#     ax.set_yticks(np.arange(len(token_string_list)))\n",
+    "#     ax.set_yticklabels(token_string_list)\n",
+    "# plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ffd1227f-cd46-4f02-affe-4d7f4b1d4646",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.16"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
