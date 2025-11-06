@@ -496,8 +496,16 @@ class poster_1_b(InteractiveScene):
 
         ### --- Get poster fram here.  ---- ###
         # self.frame.reorient(51, 74, 0, (0.05, 0.82, -0.29), 3.44)
-        self.frame.reorient(-38, 59, 0, (0.12, 0.93, -0.18), 2.93)
-        # reorient(32, 84, 0, (0.57, 1.22, -0.24), 3.40)
+        # self.frame.reorient(-38, 59, 0, (0.12, 0.93, -0.18), 2.93)
+
+        #Book bro
+        self.frame.reorient(32, 84, 0, (0.57, 1.22, -0.24), 3.40)
+        self.wait()
+
+        self.frame.reorient(33, 85, 0, (0.71, 1.32, -0.14), 2.88)
+        self.wait()
+
+
         self.wait(20)
         self.embed()
 
@@ -505,7 +513,7 @@ class poster_1_b(InteractiveScene):
 
 
 
-class poster_1_a(InteractiveScene):
+class book_3d_1b(InteractiveScene):
     '''BUnch of extra stuff in here but meh'''
     def construct(self):
 
@@ -758,7 +766,17 @@ class poster_1_a(InteractiveScene):
         # self.play(self.frame.animate.reorient(-48, 70, 0, (0.05, 0.82, -0.29), 3.44), run_time=10, rate_func=linear)
         self.wait()
 
-
+        #Second book frame grab
+        self.wait()
+        self.frame.reorient(-33, 69, 0, (0.26, 0.84, -0.18), 2.42)
+        self.wait()
+        self.frame.reorient(-38, 66, 0, (0.28, 0.84, -0.15), 2.31)
+        self.wait()
+        # self.frame.reorient(-38, 62, 0, (0.17, 0.82, -0.32), 2.69)
+        # self.frame.reorient(-38, 62, 0, (0.21, 0.8, -0.31), 2.31)
+        self.frame.reorient(-47, 62, 0, (0.06, 0.97, -0.28), 2.87)
+        self.wait()
+        
 
         self.wait(20)
         self.embed()
