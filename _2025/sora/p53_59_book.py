@@ -242,7 +242,7 @@ class TrackerControlledVectorField(VectorField):
         self.note_changed_data()
 
 
-class follow_trajectory_2b(InteractiveScene):
+class follow_trajectory_2c(InteractiveScene):
     def construct(self):
         '''
         Ok ok ok need to do a direct transition from p47b after fading out all the traces etc -> then bring
@@ -552,7 +552,8 @@ class follow_trajectory_2b(InteractiveScene):
 
         history_length=64
         # dots_indices_with_tails=[0, 30, 60, 90, 120, 150, 180, 210, 240, 255]
-        dots_indices_with_tails = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255]
+        # dots_indices_with_tails = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255]
+        dots_indices_with_tails = [0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 255]
         for k in range(0,64):
             self.play(*[all_dots_to_move[path_index].animate.move_to(axes.c2p(*[history_pre_noise[k, path_index, 0], 
                                 history_pre_noise[k, path_index, 1]])) for path_index in range(len(all_dots_to_move))], 
@@ -588,7 +589,7 @@ class follow_trajectory_2b(InteractiveScene):
 
 
         # num_dots=16 #Start small for testing and crank for final animation. 
-        num_dots=96 #256 is kinda overwhelming here
+        num_dots=48 #96 #256 is kinda overwhelming here
         colors=get_color_wheel_colors(num_dots)
         all_traced_paths=VGroup()
         all_dots_to_move=VGroup()
@@ -605,6 +606,7 @@ class follow_trajectory_2b(InteractiveScene):
         self.add(all_traced_paths)
 
         # self.wait()
+        # Kaylin 303-781-1749
 
         # self.play(FadeIn(all_dots_to_move), self.frame.animate.reorient(0, 0, 0, (-0.06, 0.01, 0.0), 7.10), run_time=3.0)
         self.wait()
@@ -620,6 +622,9 @@ class follow_trajectory_2b(InteractiveScene):
             # self.play(time_tracker.animate.set_value(8.0*(k/64.0)), run_time=0.1)
 
         self.wait()
+        self.remove(all_traced_paths)
+        self.wait()
+        self.add(all_traced_paths)
         #BOook?
 
         self.frame.reorient(0, 0, 0, (-0.23, 0.03, 0.0), 7.34)
