@@ -559,7 +559,7 @@ class guidance_book_3(InteractiveScene):
 
         self.embed()
 
-class guidance_book_4(InteractiveScene):
+class guidance_book_4c(InteractiveScene):
     def construct(self):
 
         '''
@@ -669,7 +669,7 @@ class guidance_book_4(InteractiveScene):
         heatmaps=np.load('/Users/stephen/Stephencwelch Dropbox/welch_labs/sora/hackin/conditioned_heatmaps_3.npy')
 
 
-        num_dots_per_class=128 #Crank up for final viz - 96 for video
+        num_dots_per_class=96 #Crank up for final viz - 96 for video
         #Purpple - 5C4E9A, Gold - FAA726, Purple - 00AEEF
         colors_by_class={0:'#5C4E9A', 1: '#FAA726', 2: '#00AEEF'}
 
@@ -681,8 +681,8 @@ class guidance_book_4(InteractiveScene):
                 dot_to_move_2.set_color(colors_by_class[class_index])
                 all_dots_to_move.add(dot_to_move_2)
 
-                traced_path_2 = CustomTracedPath(dot_to_move_2.get_center, stroke_color=colors_by_class[class_index], stroke_width=3.0, 
-                                              opacity_range=(0.5, 0.5), fade_length=128)
+                traced_path_2 = CustomTracedPath(dot_to_move_2.get_center, stroke_color=colors_by_class[class_index], stroke_width=1.7, 
+                                              opacity_range=(0.75, 0.75), fade_length=32)
                 # traced_path_2.set_opacity(0.5)
                 # traced_path_2.set_fill(opacity=0)
                 all_traced_paths.add(traced_path_2)
@@ -703,6 +703,7 @@ class guidance_book_4(InteractiveScene):
         dots.set_opacity(0.15)
         self.add(all_dots_to_move)
         self.wait()
+        self.frame.reorient(0, 0, 0, (0.0, 0.00, 0.0), 9.00) #Slightly wider bro
 
 
         for k in range(xt_history.shape[1]):
@@ -817,75 +818,8 @@ class guidance_book_5(InteractiveScene):
         self.add(dots)
         self.wait()
 
-        # Hmm I'm a bit torn on colors here
-        # I need different colors for my different classes, but then 
-        # I also need two arrow colors on top of my Chill brown arrows
-        # Maybe I noodle a little on the fancy final guidance scene for a minute, 
-        # get colors that work well for those arrows and then work backwards from there?
-        # Ok I think i got it -> guidance arrows will be green stil, so preserve that color
-        # Cat and cat conditined arrows will be blue - this is the outer part
-        # Alright might regres this, can't quite find something i like, but let's try: 
-        # Purpple - 5C4E9A, Gold - FAA726, Purple - 00AEEF
 
-
-
-
-        ## ---- 
-
-        # i=75
-        # dot_to_move=dots[i].copy()
-        # dot_to_move.set_opacity(1.0)
-        # traced_path = CustomTracedPath(dot_to_move.get_center, stroke_color='#00AEEF', stroke_width=3.5, 
-        #                               opacity_range=(0.6, 0.6), fade_length=15)
-        # # traced_path.set_opacity(0.5)
-        # traced_path.set_fill(opacity=0)
-
-
-        # np.random.seed(485) #485 is nice, 4 is maybe best so far, #52 is ok
-        # random_walk=0.07*np.random.randn(100,2) #I might want to manually make the first step larger/more obvious.
-        # random_walk[0]=np.array([0.2, 0.12]) #make first step go up and to the right
-        # # random_walk[-1]=np.array([0.15, -0.04])
-        # random_walk[-1]=np.array([0.19, -0.05])
-        # random_walk=np.cumsum(random_walk,axis=0) 
-
-        # random_walk=np.hstack((random_walk, np.zeros((len(random_walk), 1))))
-        # random_walk_shifted=random_walk+np.array([dataset.data[i][0][0], dataset.data[i][0][1], 0])
-        
-        # dot_history=VGroup()
-        # dot_history.add(dot_to_move.copy().scale(0.4).set_color(YELLOW))
-        # # self.play(dot_to_move.animate.move_to(axes.c2p(*random_walk_shifted[0])), run_time=1.0)
-        # # dot_to_move.move_to(axes.c2p(*random_walk_shifted[1]))
-        # traced_path.update_path(0.1)
-
-
-        # self.add(dot_to_move, traced_path)
-        # dots[i].set_opacity(0.0) #Remove starting dot for now
-
-        # start_orientation=[0, 0, 0, (0.00, 0.00, 0.0), 8.0]
-        # # end_orientation=[0, 0, 0, (2.92, 1.65, 0.0), 4.19]
-        # end_orientation=[0, 0, 0, (3.48, 1.88, 0.0), 4.26]
-        # interp_orientations=manual_camera_interpolation(start_orientation, end_orientation, 100)
-
-        # self.wait()
-        # for j in range(100):
-        #     dot_history.add(dot_to_move.copy().scale(0.4).set_color(YELLOW))
-        #     dot_to_move.move_to(axes.c2p(*random_walk_shifted[j]))
-        #     traced_path.update_path(0.1)
-        #     # self.frame.reorient(*interp_orientations[j])
-        #     self.wait(0.1)
-        #     # self.play(dot_to_move.animate.move_to(axes.c2p(*random_walk_shifted[i])), run_time=0.1, rate_func=linear)
-        # traced_path.stop_tracing()
-        # self.wait()
-
-        #Book pause
         self.wait()
-
-
-
-
-
-
-
  
 
         # Hmmm hmm ok, so there isn's really a single vector field I can show - right?
@@ -907,8 +841,8 @@ class guidance_book_5(InteractiveScene):
                 dot_to_move_2.set_color(colors_by_class[class_index])
                 all_dots_to_move.add(dot_to_move_2)
 
-                traced_path_2 = CustomTracedPath(dot_to_move_2.get_center, stroke_color=colors_by_class[class_index], stroke_width=2.0, 
-                                              opacity_range=(0.0, 1.0), fade_length=12)
+                traced_path_2 = CustomTracedPath(dot_to_move_2.get_center, stroke_color=colors_by_class[class_index], stroke_width=1.7, 
+                                              opacity_range=(0.75, 0.75), fade_length=12)
                 # traced_path_2.set_opacity(0.5)
                 # traced_path_2.set_fill(opacity=0)
                 all_traced_paths.add(traced_path_2)
