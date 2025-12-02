@@ -53,7 +53,6 @@ def draw_inputs(self, activations, all_svgs, reset=False, example_index=0, wait=
     input_mapping_3a=[[46, 47], [51, 52], [53, 54], [55, 56], [57, 58], [59, 60], [61, 62], [63, 64]]
     input_mapping_3b=[[65, 66], [67, 68]]
 
-    # example_index=117
 
     #Color inputs
     for mapping, activations_index, offset in zip([input_mapping_1a, input_mapping_1b, input_mapping_2a, input_mapping_2b, input_mapping_3a, input_mapping_3b], 
@@ -180,15 +179,14 @@ def draw_logits(self, activations, all_svgs, reset=False, example_index=0, wait=
             if wait!=0.0: self.wait(wait)
 
 
-
-
 svg_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/graphics/to_manim')
 data_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764602090')
 
 
-class P25_26(InteractiveScene):
-    def construct(self):  
+class P28_31(InteractiveScene):
+    def construct(self): 
 
+        p=113
 
         svg_files=list(sorted(svg_dir.glob('*network_to_manim*')))
 
@@ -212,67 +210,190 @@ class P25_26(InteractiveScene):
             all_svgs[8][i].set_opacity(R[i])
 
 
-        self.wait()
-        self.frame.reorient(0, 0, 0, (1.04, -0.06, 0.0), 5.63)
-        self.play(*[Write(all_svgs[i]) for i in [5, 6, 7, 8, 9, 12, 14]], run_time=7)
-        
-        self.wait()
-
-        #Our data is fed into our model as...draw while mooving camera?
-
-        self.play(self.frame.animate.reorient(0, 0, 0, (-1.05, -0.07, 0.0), 6.12), 
-                  *[Write(all_svgs[i]) for i in [1, 2]], 
-                 lag_ratio=0.5,
-                 run_time=5) #not quite what I want but pretty close
-        self.wait()
-
-        # Now add some arrows/backet in illustrator in editing
-        # Now add "one plus two" one step at a time
+        #Ok want to pick up with the same activation structure we left off with!
         example_index=117
+        self.frame.reorient(0, 0, 0, (0.02, -0.06, 0.0), 7.58)
 
-
-        draw_inputs(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.2)
-        self.wait()
-
+        draw_inputs(self, activations, all_svgs, reset=False, example_index=example_index, wait=0)
         draw_embeddings(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
-        self.wait()
-
-        #Start paragrpah 26
-        self.wait()
-        self.play(Write(all_svgs[0][:5]), Write(all_svgs[0][14]))
-        self.play(FadeIn(all_svgs[3]), FadeIn(all_svgs[4]))
-        self.wait()
-
-
-        self.play(Write(all_svgs[0][5]))
-        # self.wait()
-
         draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
-
-        self.add(all_svgs[13])
         draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
-
-        self.play(Write(all_svgs[0][6]))
         draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
         draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
         draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
-        self.wait()
-
-
-        self.play(Write(all_svgs[0][7:14]), Write(all_svgs[0][15:]),
-                 self.frame.animate.reorient(0, 0, 0, (0.02, -0.06, 0.0), 7.58),
-                 run_time=2)
-        self.wait()
-
-
-        #Add length 128 bracket in illustrator
         draw_logits(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex, temperature=25.0)
+        self.remove(all_svgs[7]); self.add(all_svgs[7])
 
+        self.add(all_svgs)
+        self.wait()
+
+        # Start p28
+        # Ok ok so it would be dope to lower the opacity (or maybe just remove?) 
+        # everything after the middle MLP layer. 
+
+        p28_fade_group=Group(all_svgs[14][9],
+                            all_svgs[14][:3], 
+                            all_svgs[10],
+                            all_svgs[11],
+                            all_svgs[0][7:14],
+                            all_svgs[0][-1],
+                            all_svgs[8][-105:],
+                            all_svgs[9][-14:],
+                            all_svgs[14][-20:])
+
+        # self.remove(all_svgs[14][9]) #MLP Block border
+        # self.remove(all_svgs[14][:3]) #Elipses
+        # self.remove(all_svgs[10])
+        # self.remove(all_svgs[11])
+        # self.remove(all_svgs[0][7:14])
+        # self.remove(all_svgs[0][-1])
+        # self.remove(all_svgs[8][-105:])
+        # self.remove(all_svgs[9][-14:])
+        # self.remove(all_svgs[14][-20:])
+
+        self.wait()
+        self.play(FadeOut(p28_fade_group), run_time=3.0)
+        self.wait()
+
+        #p29 new inpur
+        example_index=1
+        draw_inputs(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1)
+        draw_embeddings(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        self.remove(all_svgs[7]); self.add(all_svgs[7])
+        draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        self.wait()
+
+
+
+        activations['blocks.0.mlp.hook_pre'][example_index, 2, 0]
+
+        activation_txt = VGroup()
+        activation_arrows = VGroup()
+
+        for i in range(7):
+            val = round(activations['blocks.0.mlp.hook_pre'][example_index, 2, i], 2)
+            txt = Tex(str(val), font_size=24)
+            activation_txt.add(txt)
+        activation_txt.set_color(FRESH_TAN)
+        activation_txt.arrange(DOWN, buff=0.128)
+        activation_txt.move_to([3.6, 0.73, 0])
+
+        for i in range(7):
+            arr = Arrow(
+                start=LEFT, end=RIGHT,
+                buff=0.05,            # small spacing
+                stroke_width=1.4,
+                max_tip_length_to_length_ratio=0.3
+            ).scale(0.2)
+            activation_arrows.add(arr)
+        activation_arrows.set_color(CHILL_BROWN)
+        activation_arrows.arrange(DOWN, buff=0.16)
+        activation_arrows.move_to([3.0, 0.73, 0])
+
+        self.wait()
+        self.play(FadeIn(activation_arrows), Write(activation_txt), lag_ratio=0.5)
+
+        # Ok deeper into p30 here. 
+        # Need 5-7 little plots 
+        # And will probably want to zoom out a bit when I make these axes. 
+        # The importantly I want to sweep through inptu values as I add points
+        # Probably add some nice curvy arrows to each axis in illustrator
+        # And I think use manim axes
+
+        self.play(FadeOut(activation_arrows), FadeOut(activation_txt))
+        self.wait()
+
+        axes=VGroup()
+        for i in range(7):
+            a = Axes(
+                x_range=[0, 1.0, 1],
+                y_range=[-1.0, 1.0, 1],
+                width=2.4,
+                height=0.8,
+                axis_config={
+                    "color": CHILL_BROWN,
+                    "include_ticks": False,
+                    "include_numbers": False,
+                    "include_tip": True,
+                    "stroke_width":3,
+                    "tip_config": {"width":0.02, "length":0.02}
+                    }
+                )
+            axes.add(a)
+        axes.arrange(DOWN, buff=0.2)
+        axes.move_to([4.8, 0, 0])
 
         
-        self.play(FadeIn(all_svgs[10]), FadeIn(all_svgs[11]), run_time=2.0)
+        all_pts=VGroup()
+        activation_scaling=[0.25, 0.25, 0.25, 0.25, 0.18, 0.18,0.18] #Will probably need to noodle here a bit
+        neuron_indices=[0, 1, 2, 3, 4, 5, 6] #Assuming there will be some model tweaking here
+        for i, neuron_idx in enumerate(neuron_indices):
+            dese_pts=VGroup()
+            for j in range(p):
+                x = j / p
+                y = activations['blocks.0.mlp.hook_pre'][j, 2, i]*activation_scaling[i]
+                pt = Dot(axes[i].c2p(x, y), radius=0.02, color=FRESH_TAN, stroke_width=0)
+                dese_pts.add(pt)
+            all_pts.add(dese_pts)
+
+
+
+        self.add(axes, all_pts)
+
+
+
+
+        #Shoudl loopify this
+        # neuron_1_pts = [axis_1.c2p(i/len(probe_1), probe_1[i,0]) for i in range(len(probe_1))]
+        # probe_1a_line = VMobject(stroke_width=3)
+        # probe_1a_line.set_points_smoothly(probe_1a_pts)
+        # probe_1a_line.set_color(CYAN)
+
+
+
+        #     # Small left arrow
+        #     arr = Arrow(
+        #         start=LEFT, end=RIGHT,
+        #         buff=0.05,            # small spacing
+        #         stroke_width=1.4,
+        #         max_tip_length_to_length_ratio=0.3
+        #     ).scale(0.2)
+
+        #     # Put arrow to the left of the text
+        #     row = VGroup(arr, txt)
+        #     row.arrange(RIGHT, buff=0.1)
+
+        #     activation_rows.add(row)
+
+        # # Arrange rows vertically
+        # activation_rows.arrange(DOWN, buff=0.128)
+
+        # # Coloring and positioning
+        # activation_rows.set_color(FRESH_TAN)
+        # activation_rows.move_to([3.5, 0.73, 0])
+
+        # self.add(activation_rows)
+
+        # activation_texts = VGroup()
+        # for i in range(7):
+        #     val = round(activations['blocks.0.mlp.hook_pre'][example_index, 2, i], 2)
+        #     activation_texts.add(Tex(str(val), font_size=24))
+
+        # activation_texts.arrange(DOWN, buff=0.128)
+        # activation_texts.set_color(FRESH_TAN)
+        # activation_texts.move_to([3.5, 0.73, 0])
+        # self.add(activation_texts)
+
+
+        # Tex('')
+
+
 
 
 
         self.wait(20)
         self.embed()
+
