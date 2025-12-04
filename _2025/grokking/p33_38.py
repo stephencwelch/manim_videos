@@ -85,6 +85,24 @@ def draw_embeddings(self, activations, all_svgs, reset=False, example_index=0, w
             if reset: all_svgs[4][idx].set_color(BLACK)
             if wait!=0.0: self.wait(wait)
 
+def draw_embeddings_2(self, activations, all_svgs, reset=False, example_index=0, wait=0, colormap=black_to_tan_hex):
+
+    embedding_fill_indices_1=[3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23]
+    embedding_fill_indices_2=[28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48]
+    embedding_fill_indices_3=[53, 55, 57, 59, 61, 63, 65, 67, 69, 71, 73]
+    # vmin=np.min(activations['blocks.0.hook_resid_pre'])*0.9 
+    # vmax=np.max(activations['blocks.0.hook_resid_pre'])*0.9
+    for i, indices in enumerate([embedding_fill_indices_1, embedding_fill_indices_2, embedding_fill_indices_3]):
+        vmin=np.min(activations['blocks.0.hook_resid_pre'][example_index][i])*0.8 #Scaling by column
+        vmax=np.max(activations['blocks.0.hook_resid_pre'][example_index][i])*0.8
+        for j, idx in enumerate(indices):
+            # c=viridis_hex(activations['blocks.0.hook_resid_pre'][example_index, 0, i], vmin, vmax)
+            c=colormap(activations['blocks.0.hook_resid_pre'][example_index, i, j], vmin, vmax)
+            # print(activations['blocks.0.hook_resid_pre'][example_index, 0, j])
+            all_svgs[4][idx].set_color(c)
+            if reset: all_svgs[4][idx].set_color(BLACK)
+            if wait!=0.0: self.wait(wait)
+
 
 def draw_attention_values(self, activations, all_svgs, reset=False, example_index=0, wait=0, colormap=black_to_tan_hex):
 
@@ -184,7 +202,199 @@ svg_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/graphics/
 data_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
 
 
-class P33_38(InteractiveScene):
+
+
+class P34_38(InteractiveScene):
+    def construct(self): 
+
+        #Pick up (mostly) where we left off on 31. 
+
+        p=113
+
+        svg_files=list(sorted(svg_dir.glob('*network_to_manim*')))
+
+        with open(data_dir/'final_model_activations_sample.p', 'rb') as f:
+            activations = pickle.load(f)
+
+        all_svgs=Group()
+        for svg_file in svg_files[1:18]: #Expand if I add more artboards
+            svg_image=SVGMobject(str(svg_file))
+            all_svgs.add(svg_image[1:]) #Thowout background
+
+        all_svgs.scale(6.0) #Eh?
+
+        draw_inputs(self, activations, all_svgs, reset=True, example_index=0)
+        draw_attention_patterns(self, activations, all_svgs, reset=True, example_index=0)
+        
+        #MLP weights
+        np.random.seed(5)
+        R=np.random.uniform(0.3, 0.75, len(all_svgs[8]))
+        for i in range(len(all_svgs[8])):
+            all_svgs[8][i].set_opacity(R[i])
+
+
+        #Ok want to pick up with the same activation structure we left off with!
+        example_index=0
+        self.frame.reorient(0, 0, 0, (0, 0, 0), 8.0)
+
+        draw_inputs(self, activations, all_svgs, reset=False, example_index=example_index, wait=0)
+        draw_embeddings(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
+        draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
+        draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
+        draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
+        draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
+        draw_logits(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex, temperature=25.0)
+        
+
+        self.add(all_svgs[:15], all_svgs[16])
+        self.remove(all_svgs[7]); self.add(all_svgs[7])
+
+
+        # Ok this should land us exactly wehre we left off. 
+        # Now we can go analyze the embedding layer. 
+        # Ok first column of embedding layer
+
+        # self.remove(all_svgs[5:15])
+        # self.remove(all_svgs[0][15:])
+        # self.remove(all_svgs[0][5:14])
+        # self.remove(all_svgs[4][25:])
+        # self.remove(all_svgs[3])
+
+        self.wait()
+        self.play(self.frame.animate.reorient(0, 0, 0, (-1.23, 0.07, 0.0), 5.51),
+                  FadeOut(all_svgs[5:15]),
+                  FadeOut(all_svgs[0][15:]),
+                  FadeOut(all_svgs[0][5:14]), 
+                  FadeOut(all_svgs[4][25:]),
+                  FadeOut(all_svgs[3]),
+                  run_time=5)
+
+        #(113, 113, 3, 128)
+        embedding_acts=np.load(data_dir/'hook_resid_pre.npy')
+        
+        axis_1 = Axes(
+            x_range=[0, 1.0, 1],
+            y_range=[-1.0, 1.0, 1],
+            width=2*2.4,
+            height=2*0.8,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2.5,
+                "tip_config": {"width":0.02, "length":0.02}
+                }
+            )
+
+        axis_1.move_to([0, 0.58, 0])
+
+        arrow_1 = Arrow(
+                start=LEFT, end=RIGHT,
+                buff=0.05,            # small spacing
+                stroke_width=1.0,
+                max_tip_length_to_length_ratio=0.3
+            ).scale(0.2)
+        arrow_1.set_color(CHILL_BROWN)
+        arrow_1.next_to(axis_1, LEFT, buff=0.1)
+
+        axis_1_x_label=Tex('x', font_size=24)
+        axis_1_x_label.set_color(CHILL_BROWN)
+        axis_1_x_label.next_to(axis_1, RIGHT, buff=0.1)
+        axis_1_x_label.shift([0, -0.1, 0])
+        
+
+        self.play(Write(axis_1), Write(arrow_1), run_time=3)
+        self.add(axis_1_x_label)
+        self.wait()
+
+        pts_1=VGroup()
+        neuron_idx=3
+        neuron_average=embedding_acts[:, 0, 0, neuron_idx].mean()
+        neuron_max=np.max(np.abs(embedding_acts[:, 0, 0, neuron_idx]-neuron_average))*1.0 #Might want to bring down
+        for j in range(p):
+            x = j / p
+            y = (embedding_acts[j, 0, 0, neuron_idx]-neuron_average)/neuron_max
+            pt = Dot(axis_1.c2p(x, y), radius=0.02, color=FRESH_TAN, stroke_width=0)
+            pt.set_color(FRESH_TAN)
+            pts_1.add(pt)
+
+
+    
+        # I didn't cache the activations for sweeping x -> quickly hack it here 
+        # Might need it later though -> i guess I could load up the full activations
+        # Ok we'll see, one problem at a time. 
+        activations_input_flipped={}
+        activations_input_flipped['x']=np.zeros((565, 3))
+        for i in range(p):
+            activations_input_flipped['x'][i][0]=i
+            activations_input_flipped['x'][i][1]=0
+            activations_input_flipped['x'][i][2]=113
+
+        self.wait()
+        for i in range(p):
+            draw_inputs(self, activations_input_flipped, all_svgs, reset=False, example_index=i, wait=0)
+            draw_embeddings_2(self, activations, all_svgs, reset=False, example_index=i, wait=0, colormap=black_to_tan_hex)
+            self.add(pts_1[i])
+            self.wait(0.2)
+        self.wait()
+
+        xs=np.linspace(0, 1, p)
+        ys=np.cos(np.arange(0, p)*8*np.pi/p-2.6)
+
+        pts_curve_1 = [axis_1.c2p(xs[j], ys[j]) for j in range(p)]
+        curve_1 = VMobject(stroke_width=3)
+        curve_1.set_points_smoothly(pts_curve_1)
+        curve_1.set_color(YELLOW)
+
+        wave_label_1 = Tex(r'A_1 \cos \big( \frac{8 \pi }{113} x + \phi_1 \big)')
+        wave_label_1.set_color(YELLOW)
+        wave_label_1.scale(0.4)
+        wave_label_1.move_to([-0.1, 1.7, 0])
+
+        self.wait()
+        self.play(ShowCreation(curve_1))
+        self.add(wave_label_1)
+        self.wait()
+
+
+        #P35 Hmm might be cool to contruct a "high frequency" curve that matches the data
+        # and then replacement transform to it?
+        pts_curve_2=[]
+        for j in range(p):
+            x = j / p
+            y = (embedding_acts[j, 0, 0, neuron_idx]-neuron_average)/neuron_max
+            pts_curve_2.append(axis_1.c2p(x, y))
+        curve_2 = VMobject(stroke_width=3)
+        curve_2.set_points_smoothly(pts_curve_2)
+        curve_2.set_color(YELLOW)
+
+        self.play(ReplacementTransform(curve_1, curve_2), 
+                  FadeOut(wave_label_1), run_time=5)
+        self.wait()
+
+        #P36
+        
+
+
+
+
+
+        self.wait()
+
+
+
+        self.wait(20)
+        self.embed()
+
+
+
+
+
+
+
+class P33_34(InteractiveScene):
     def construct(self): 
 
         #Pick up (mostly) where we left off on 31. 
@@ -225,9 +435,9 @@ class P33_38(InteractiveScene):
         draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
         draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
         draw_logits(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex, temperature=25.0)
-        self.remove(all_svgs[7]); self.add(all_svgs[7])
 
         self.add(all_svgs[:15])
+        self.remove(all_svgs[7]); self.add(all_svgs[7])
 
         # Start p28
         # Ok ok so it would be dope to lower the opacity (or maybe just remove?) 
@@ -391,9 +601,9 @@ class P33_38(InteractiveScene):
         wave_label_3.move_to([4.8, 1.45, 0])
 
         self.wait()
-        self.play(ShowCreation(curves), lag_ration=0.8, run_time=4)
+        self.play(ShowCreation(curves), lag_ratio=0.8, run_time=4)
         self.add(wave_label_1, wave_label_2, wave_label_3) #Simple add here I think!
-        self.wait()
+        
 
         # self.remove(wave_label_1, wave_label_2, wave_label_3)
 
@@ -406,11 +616,27 @@ class P33_38(InteractiveScene):
 
         # self.frame.reorient(0, 0, 0, (6.47, 1.97, 0.0), 3.63)
 
+        #Ok now we need a nice transition to a "clean model", then smooth cut to new scene!
+        self.wait()
+        self.play(self.frame.animate.reorient(0, 0, 0, (0, 0, 0), 8.0), 
+                 FadeOut(wave_label_1),
+                 FadeOut(wave_label_2),
+                 FadeOut(wave_label_3),
+                 FadeOut(axes), 
+                 FadeOut(all_svgs[15]), 
+                 FadeOut(all_pts), 
+                 FadeOut(fft_svgs[0]), 
+                 FadeOut(fft_svgs[1]),
+                 FadeOut(curves),
+                 FadeOut(fft_svgs[2]),
+                 FadeIn(p28_fade_group),
+                 run_time=6)
+
         
-        self.add(p28_fade_group); 
+        # self.add(p28_fade_group); 
         self.remove(all_svgs[9]); self.add(all_svgs[9])
         self.remove(all_svgs[7]); self.add(all_svgs[7]) #Occlusions bro
-
+        self.wait()
 
         self.wait(20)
         self.embed()
