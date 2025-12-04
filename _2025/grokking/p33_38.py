@@ -217,7 +217,7 @@ class P34_38(InteractiveScene):
             activations = pickle.load(f)
 
         all_svgs=Group()
-        for svg_file in svg_files[1:18]: #Expand if I add more artboards
+        for svg_file in svg_files[1:20]: #Expand if I add more artboards
             svg_image=SVGMobject(str(svg_file))
             all_svgs.add(svg_image[1:]) #Thowout background
 
@@ -374,10 +374,143 @@ class P34_38(InteractiveScene):
                   FadeOut(wave_label_1), run_time=5)
         self.wait()
 
-        #P36
+        # P36 - ok here we go. 
+        # SO let me create 8 plots here, then I can do some transform action
+        # Will also want to bring in some nice arrows again from ilustrator I think
+
+        axes=VGroup()
+        for i in range(8):
+            a = Axes(
+                x_range=[0, 1.0, 1],
+                y_range=[-1.0, 1.0, 1],
+                width=2.4,
+                height=0.56,
+                axis_config={
+                    "color": CHILL_BROWN,
+                    "include_ticks": False,
+                    "include_numbers": False,
+                    "include_tip": True,
+                    "stroke_width":1.8,
+                    "tip_config": {"width":0.02, "length":0.02}
+                    }
+                )
+            axes.add(a)
+        axes.arrange(DOWN, buff=0.1)
+        axes.move_to([-1., 0, 0])
+
+        all_pts=VGroup()
+        neuron_indices=[ 3,  22,  70,  77,  97, 109, 110, 120]
+        for i, neuron_idx in enumerate(neuron_indices):
+            neuron_average=embedding_acts[:, 0, 0, neuron_idx].mean()
+            neuron_max=np.max(np.abs(embedding_acts[:, 0, 0, neuron_idx]-neuron_average))*1.0 #Might want to bring down
+            dese_pts=VGroup()
+            for j in range(p):
+                x = j / p
+                y = (embedding_acts[j, 0, 0, neuron_idx]-neuron_average)/neuron_max
+                pt = Dot(axes[i].c2p(x, y), radius=0.02, color=FRESH_TAN, stroke_width=0)
+                pt.set_color(FRESH_TAN)
+                dese_pts.add(pt)
+            all_pts.add(dese_pts)
+
+        self.wait()
+
+        self.remove(curve_2, arrow_1, axis_1_x_label)
+        self.play(ReplacementTransform(axis_1, axes[0]),
+                  ReplacementTransform(pts_1, all_pts[0]), 
+                  run_time=3)
+        self.play(FadeIn(all_svgs[17]), FadeIn(axes[1:]), FadeIn(all_pts[1:]), run_time=3)
+
+        self.wait()
+
+        # Fancy veritasium sytle stacking would be cool here, but kinda think i should keep 
+        # moving
+        # Also I think load from disk vs compute dynamically. 
+        sparse_probe_1=np.load(data_dir/'sparse_probe_1.npy')
+        pts_probe_1=VGroup()
+        for j in range(p):
+            x = j / p
+            pt = Dot(axes[0].c2p(x, sparse_probe_1[j]), radius=0.02, color=FRESH_TAN, stroke_width=0)
+            pt.set_color(FRESH_TAN)
+            pts_probe_1.add(pt)
+
+        self.wait()
+        self.play(*[ReplacementTransform(all_pts[i], pts_probe_1) for i in range(8)],
+                 FadeOut(all_svgs[17]), FadeOut(axes[1:]),
+                 run_time=4)
+        self.wait()
+
+        #Now draw on cosine and label
+        xs = np.linspace(0, 1.0, p) 
+        pts = [axes[0].c2p(xs[j], np.cos(j*8*np.pi/p)) for j in range(p)]
+
+        curve_3 = VMobject(stroke_width=3)
+        curve_3.set_points_smoothly(pts)
+        curve_3.set_color(YELLOW)
         
+        # wave_label_4 = Tex(r'\cos \big( \frac{8 \pi }{113} x \big)')
+        wave_label_4 = Tex(r'\cos \big(\tfrac{8\pi}{113}x\big)')
+        wave_label_4.set_color(YELLOW)
+        wave_label_4.scale(0.45)
+        wave_label_4.move_to([0.9, 2.3, 0])
+
+        self.wait()
+
+        self.play(ShowCreation(curve_3), run_time=3)
+        self.add(wave_label_4)
+        self.wait()
+
+        # Ok actually not too far away from wrapping up p38 -> let's go!
+        # So we're mid p36 here, I want to add back in the full network here
+        # and move hte linear probe to it's "final" location, then add in the remaining
 
 
+        probe_1_group=VGroup(axes[0], curve_3)
+        # probe_1_group.scale(2.0)
+        # probe_1_group.move_to([-4, 3, 0])
+
+
+
+        # wave_label_4.scale(1.5)
+        # wave_label_4.move_to([-0.85, 3.6, 0])
+
+        self.wait()
+        self.remove(pts_probe_1)
+        self.play(
+                  self.frame.animate.reorient(0, 0, 0, (0.0, 0.0, 0.0), 8.0),
+                  probe_1_group.animate.scale(2.0).move_to([-4, 3, 0]),
+                  wave_label_4.animate.scale(1.5).move_to([-0.85, 3.6, 0]),
+                  FadeIn(all_svgs[5:15]),
+                  FadeIn(all_svgs[0][15:]),
+                  FadeIn(all_svgs[0][5:14]), 
+                  FadeIn(all_svgs[4][25:]),
+                  FadeIn(all_svgs[3]),
+                  run_time=5)
+        
+        self.add(all_svgs[:15], all_svgs[16])
+        self.remove(all_svgs[7]); self.add(all_svgs[7])
+        self.add(all_svgs[18][:21])
+        x_label_2=Tex('x', font_size=24)
+        x_label_2.set_color(CHILL_BROWN)
+        x_label_2.next_to(axes[0], RIGHT, buff=0.1)
+        x_label_2.shift([0, -0.1, 0])
+        self.add(x_label_2)
+        self.wait()
+
+        #Ok getting close to this milestone!!
+
+
+
+        # self.remove(all_svgs[18])
+
+        # self.add(curve_3)
+        # self.add(wave_label_4)
+
+        # self.remove(wave_label_4)
+
+        # self.remove(curve_3)
+        # self.add(all_pts)
+        # self.add(axes)
+        # self.remove(axes)
 
 
 
