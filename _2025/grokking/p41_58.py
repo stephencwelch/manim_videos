@@ -272,13 +272,12 @@ class P41_45(InteractiveScene):
                 }
             )
 
-        axis_1.move_to([-4, 2.85, 0])
+        axis_1.move_to([-4, 3.05, 0])
         x_label=Tex('x', font_size=24)
         x_label.set_color(CHILL_BROWN)
         x_label.next_to(axis_1, RIGHT, buff=0.1)
         x_label.shift([0, -0.1, 0])
         
-
         axis_2.move_to([-4, -2.85, 0])
         y_label=Tex('y', font_size=24)
         y_label.set_color(CHILL_BROWN)
@@ -291,51 +290,75 @@ class P41_45(InteractiveScene):
         sparse_probe_4=np.load(data_dir/'sparse_probe_4.npy')
 
         pts_curve_1=[]
+        dots_curve_1=VGroup()
         for j in range(p):
             x = j / p
             y = sparse_probe_1[j]
             pts_curve_1.append(axis_1.c2p(x, y))
+
+            pt = Dot(axis_1.c2p(x, y), radius=0.02, stroke_width=0)
+            pt.set_color(WHITE)
+            dots_curve_1.add(pt)
+
         curve_1 = VMobject(stroke_width=3)
         curve_1.set_points_smoothly(pts_curve_1)
         curve_1.set_color(YELLOW)
 
         pts_curve_2=[]
+        dots_curve_2=VGroup()
         for j in range(p):
             x = j / p
             y = sparse_probe_2[j]
             pts_curve_2.append(axis_1.c2p(x, y))
+
+            pt = Dot(axis_1.c2p(x, y), radius=0.02, stroke_width=0)
+            pt.set_color(WHITE)
+            dots_curve_2.add(pt)
+
         curve_2 = VMobject(stroke_width=3)
         curve_2.set_points_smoothly(pts_curve_2)
         curve_2.set_color(MAGENTA)
 
         pts_curve_3=[]
+        dots_curve_3=VGroup()
         for j in range(p):
             x = j / p
             y = sparse_probe_3[j]
             pts_curve_3.append(axis_2.c2p(x, y))
+
+            pt = Dot(axis_2.c2p(x, y), radius=0.02, stroke_width=0)
+            pt.set_color(WHITE)
+            dots_curve_3.add(pt)
+
         curve_3 = VMobject(stroke_width=3)
         curve_3.set_points_smoothly(pts_curve_3)
         curve_3.set_color(CYAN)
 
         pts_curve_4=[]
+        dots_curve_4=VGroup()
         for j in range(p):
             x = j / p
             y = sparse_probe_4[j]
             pts_curve_4.append(axis_2.c2p(x, y))
+
+            pt = Dot(axis_2.c2p(x, y), radius=0.02, stroke_width=0)
+            pt.set_color(WHITE)
+            dots_curve_4.add(pt)
+
         curve_4 = VMobject(stroke_width=3)
         curve_4.set_points_smoothly(pts_curve_4)
         curve_4.set_color(RED)
 
 
-        wave_label_1 = Tex(r'A_1 \cos \big( \frac{8 \pi }{113} x + \phi_1 \big)')
+        wave_label_1 =  Tex(r'\cos \big(\tfrac{8\pi}{113}x\big)')
         wave_label_1.set_color(YELLOW)
         wave_label_1.scale(0.45*1.5)
-        wave_label_1.move_to([-0.9, 3.2, 0])
+        wave_label_1.move_to([-0.9, 3.65, 0])
 
         wave_label_2 = Tex(r'\sin \big(\tfrac{8\pi}{113}x\big)')
         wave_label_2.set_color(MAGENTA)
         wave_label_2.scale(0.45*1.5)
-        wave_label_2.move_to([-0.9, 2.6, 0])
+        wave_label_2.move_to([-0.95, 2.65, 0])
 
         wave_label_3 = Tex(r'\cos \big(\tfrac{8\pi}{113}y\big)')
         wave_label_3.set_color(CYAN)
@@ -348,13 +371,120 @@ class P41_45(InteractiveScene):
         wave_label_4.move_to([-0.9, -3.2, 0])
 
 
-
-
         self.add(all_svgs[18])
         self.add(axis_1, axis_2, x_label, y_label)
         self.add(curve_1, curve_2, curve_3, curve_4)
         self.add(wave_label_1, wave_label_2, wave_label_3, wave_label_4)
         self.wait()
+
+        # Ok great now we can actually start p41
+        # It's a little more complicated than I wanted, but that's ok.
+        # So I think its fade out the same right half of the network (minus any parts of the emberdding layer)
+        # Then move little points (which I should prep above) into two circle plots. 
+        # And copies of labels move to each axis of the plots. 
+
+        self.wait()
+        self.play(
+                  FadeOut(all_svgs[5:15]),
+                  FadeOut(all_svgs[0][15:]),
+                  FadeOut(all_svgs[0][5:14]), 
+                  run_time=5)
+        self.wait()
+
+
+        axis_3 = Axes(
+            x_range=[-1.1, 1.1, 1],
+            y_range=[-1.1, 1.1, 1],
+            width=3.5,
+            height=3.5,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2.4,
+                "tip_config": {"width":0.02, "length":0.02}
+                }
+            )
+        axis_3[0].set_color(YELLOW)
+        axis_3[1].set_color(MAGENTA)
+        axis_3.move_to([3, 1.9, 0])
+        
+        axis_4 = Axes(
+            x_range=[-1.1, 1.1, 1],
+            y_range=[-1.1, 1.1, 1],
+            width=3.5,
+            height=3.5,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2.4,
+                "tip_config": {"width":0.02, "length":0.02}
+                }
+            )
+        axis_4[0].set_color(CYAN)
+        axis_4[1].set_color(RED)
+        axis_4.move_to([3, -1.9, 0])
+
+
+        dots_curve_5=VGroup()
+        for j in range(p):
+            pt = Dot(axis_3.c2p(sparse_probe_1[j], sparse_probe_2[j]), 
+                     radius=0.02, stroke_width=0)
+            pt.set_color(WHITE)
+            dots_curve_5.add(pt)
+
+        dots_curve_6=VGroup()
+        for j in range(p):
+            pt = Dot(axis_4.c2p(sparse_probe_3[j], sparse_probe_4[j]), 
+                     radius=0.02, stroke_width=0)
+            pt.set_color(WHITE)
+            dots_curve_6.add(pt)
+
+        wave_label_1_copy=wave_label_1.copy()
+        wave_label_1_copy.next_to(axis_3, RIGHT, buff=0.2)
+        wave_label_2_copy=wave_label_2.copy()
+        wave_label_2_copy.next_to(axis_3, TOP, buff=0)
+        wave_label_2_copy.shift([0.9, -0.2, 0])
+        wave_label_3_copy=wave_label_3.copy()
+        wave_label_3_copy.next_to(axis_4, RIGHT, buff=0.2)
+        wave_label_4_copy=wave_label_4.copy()
+        wave_label_4_copy.next_to(axis_4, TOP, buff=0)
+        wave_label_4_copy.shift([0.9, -0.2, 0])
+
+        self.wait()
+        self.play(ShowCreation(axis_3), run_time=2)
+        self.play(ReplacementTransform(wave_label_1.copy(), wave_label_1_copy), run_time=2)
+        self.play(ReplacementTransform(wave_label_2.copy(), wave_label_2_copy), run_time=2)
+        self.wait()
+
+        self.play(FadeIn(dots_curve_1), FadeIn(dots_curve_2), run_time=2)
+        self.play(ReplacementTransform(dots_curve_1, dots_curve_5), 
+                  ReplacementTransform(dots_curve_2, dots_curve_5), 
+                  # lag_ratio=0.5, #This is fun but I think the other way is more clear. 
+                  run_time=5)
+        self.wait()
+
+        self.play(ShowCreation(axis_4),
+                ReplacementTransform(wave_label_3.copy(), wave_label_3_copy), 
+                ReplacementTransform(wave_label_4.copy(), wave_label_4_copy), run_time=2)        
+        self.play(ReplacementTransform(dots_curve_3, dots_curve_6), 
+                  ReplacementTransform(dots_curve_4, dots_curve_6), 
+                  # lag_ratio=0.5, #This is fun but I think the other way is more clear. 
+                  run_time=5)
+        self.wait()
+
+        
+
+
+
+        # self.add(wave_label_1_copy, wave_label_2_copy)
+        # self.add(wave_label_3_copy, wave_label_4_copy)
+        # self.add(axis_3)
+        # self.add(axis_4)
+        # self.add(dots_curve_5, dots_curve_6)
 
 
 
