@@ -202,12 +202,200 @@ svg_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/graphics/
 data_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
 
 
+class P44_50(InteractiveScene):
+    def construct(self): 
+
+        p=113
+        svg_files=list(sorted(svg_dir.glob('*network_to_manim*')))
+
+        with open(data_dir/'final_model_activations_sample.p', 'rb') as f:
+            activations = pickle.load(f)
+
+        all_svgs=Group()
+        for svg_file in svg_files[1:20]: #Expand if I add more artboards
+            svg_image=SVGMobject(str(svg_file))
+            all_svgs.add(svg_image[1:]) #Thowout background
+
+        all_svgs.scale(6.0) #Eh?
+
+        # p41 - Ok need to pick up with my linear probes, 
+        # then turn them into circles
+
+        example_index=0
+        self.frame.reorient(0, 0, 0, (0, 0, 0), 8.0)
+
+        draw_inputs(self, activations, all_svgs, reset=False, example_index=example_index, wait=0)
+        draw_embeddings(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_logits(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex, temperature=25.0)
+        self.add(all_svgs[:15], all_svgs[16])
+        self.remove(all_svgs[7]); self.add(all_svgs[7]) 
+
+
+        axis_1 = Axes(
+            x_range=[0, 1.0, 1],
+            y_range=[-1.0, 1.0, 1],
+            width=2*2.4,
+            height=2*0.56,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":1.8,
+                "tip_config": {"width":0.02, "length":0.02}
+                }
+            )
+
+        axis_2 = Axes(
+            x_range=[0, 1.0, 1],
+            y_range=[-1.0, 1.0, 1],
+            width=2*2.4,
+            height=2*0.56,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":1.8,
+                "tip_config": {"width":0.02, "length":0.02}
+                }
+            )
+
+        axis_1.move_to([-4, 3.05, 0])
+        x_label=Tex('x', font_size=24)
+        x_label.set_color(CHILL_BROWN)
+        x_label.next_to(axis_1, RIGHT, buff=0.1)
+        x_label.shift([0, -0.1, 0])
+        
+        axis_2.move_to([-4, -2.85, 0])
+        y_label=Tex('y', font_size=24)
+        y_label.set_color(CHILL_BROWN)
+        y_label.next_to(axis_2, RIGHT, buff=0.1)
+        y_label.shift([0, -0.1, 0])
+
+        sparse_probe_1=np.load(data_dir/'sparse_probe_1.npy')
+        sparse_probe_2=np.load(data_dir/'sparse_probe_2.npy')
+        sparse_probe_3=np.load(data_dir/'sparse_probe_3.npy')
+        sparse_probe_4=np.load(data_dir/'sparse_probe_4.npy')
+
+        pts_curve_1=[]
+        for j in range(p):
+            x = j / p
+            y = sparse_probe_1[j]
+            pts_curve_1.append(axis_1.c2p(x, y))
+
+        curve_1 = VMobject(stroke_width=3)
+        curve_1.set_points_smoothly(pts_curve_1)
+        curve_1.set_color(YELLOW)
+
+        pts_curve_2=[]
+        for j in range(p):
+            x = j / p
+            y = sparse_probe_2[j]
+            pts_curve_2.append(axis_1.c2p(x, y))
+
+        curve_2 = VMobject(stroke_width=3)
+        curve_2.set_points_smoothly(pts_curve_2)
+        curve_2.set_color(MAGENTA)
+
+        pts_curve_3=[]
+        for j in range(p):
+            x = j / p
+            y = sparse_probe_3[j]
+            pts_curve_3.append(axis_2.c2p(x, y))
+
+        curve_3 = VMobject(stroke_width=3)
+        curve_3.set_points_smoothly(pts_curve_3)
+        curve_3.set_color(CYAN)
+
+        pts_curve_4=[]
+        for j in range(p):
+            x = j / p
+            y = sparse_probe_4[j]
+            pts_curve_4.append(axis_2.c2p(x, y))
+
+        curve_4 = VMobject(stroke_width=3)
+        curve_4.set_points_smoothly(pts_curve_4)
+        curve_4.set_color(RED)
+
+
+        wave_label_1 =  Tex(r'\cos \big(\tfrac{8\pi}{113}x\big)')
+        wave_label_1.set_color(YELLOW)
+        wave_label_1.scale(0.45*1.5)
+        wave_label_1.move_to([-0.9, 3.65, 0])
+
+        wave_label_2 = Tex(r'\sin \big(\tfrac{8\pi}{113}x\big)')
+        wave_label_2.set_color(MAGENTA)
+        wave_label_2.scale(0.45*1.5)
+        wave_label_2.move_to([-0.95, 2.65, 0])
+
+        wave_label_3 = Tex(r'\cos \big(\tfrac{8\pi}{113}y\big)')
+        wave_label_3.set_color(CYAN)
+        wave_label_3.scale(0.45*1.5)
+        wave_label_3.move_to([-0.9, -2.2, 0])
+
+        wave_label_4 = Tex(r'\sin \big(\tfrac{8\pi}{113}y\big)')
+        wave_label_4.set_color(RED)
+        wave_label_4.scale(0.45*1.5)
+        wave_label_4.move_to([-0.9, -3.2, 0])
+
+
+        self.add(all_svgs[18])
+        self.add(axis_1, axis_2, x_label, y_label)
+        self.add(curve_1, curve_2, curve_3, curve_4)
+        self.add(wave_label_1, wave_label_2, wave_label_3, wave_label_4)
+        self.remove(all_svgs[7]); self.add(all_svgs[7]) 
+        self.remove(all_svgs[9]); self.add(all_svgs[9]) 
+        self.wait()
+
+
+        #Ok so I think this is just like p30ish, where I fade out everything past the second MLP layer?
+
+        mid_mlp_fade_group=Group(all_svgs[14][9],
+                                all_svgs[14][:3], 
+                                all_svgs[10],
+                                all_svgs[11],
+                                all_svgs[0][7:14],
+                                all_svgs[0][-1],
+                                all_svgs[8][-105:],
+                                all_svgs[9][-14:],
+                                all_svgs[14][-20:])
+
+        self.wait()
+        self.play(FadeOut(mid_mlp_fade_group), 
+                 self.frame.animate.reorient(0, 0, 0, (1.32, 0.17, 0.0), 8.35), 
+                 run_time=4)
+        self.wait()
+
+
+        # Hmmmm how do I want to build this surface?
+        # Might be interesting to start will all just points the bulid the surface?
+        # Trying to think through how we go from 2D to 3d here too...
+        # Yeah kinda leaning towards setting up and explaining the x/y grid first maybe?
+        # So, this will definitely need to be a separate scene that we bring together in premiere
+        # In the 2d view I need to get the framing right, and s
+        # Oh wait do I need to include probes here? Yes, right, like we're building.
+        # Ok got em. 
+        # Hmm if i want to "bring over" the probe plots that's might get tricky
+        # ok one problem at a time tho
+
+
+
+
+
+
+        self.wait(20)
+        self.embed()
+
 
 
 class P41_43(InteractiveScene):
     def construct(self): 
-
-        #Pick up (mostly) where we left off on 31. 
 
         p=113
 
@@ -237,8 +425,6 @@ class P41_43(InteractiveScene):
         draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
         draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
         draw_logits(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex, temperature=25.0)
-        
-
         self.add(all_svgs[:15], all_svgs[16])
         self.remove(all_svgs[7]); self.add(all_svgs[7])        
 
