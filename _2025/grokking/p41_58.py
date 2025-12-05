@@ -204,7 +204,7 @@ data_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_lin
 
 
 
-class P41_45(InteractiveScene):
+class P41_43(InteractiveScene):
     def construct(self): 
 
         #Pick up (mostly) where we left off on 31. 
@@ -231,11 +231,11 @@ class P41_45(InteractiveScene):
 
         draw_inputs(self, activations, all_svgs, reset=False, example_index=example_index, wait=0)
         draw_embeddings(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
-        draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
-        draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
-        draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
-        draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
-        draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.1, colormap=black_to_tan_hex)
+        draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
         draw_logits(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex, temperature=25.0)
         
 
@@ -476,8 +476,73 @@ class P41_45(InteractiveScene):
                   run_time=5)
         self.wait()
 
-        
+        #P42 Fade out scatter plots and bring in network
+        self.play(FadeOut(wave_label_1_copy),
+                FadeOut(wave_label_2_copy),
+                FadeOut(wave_label_3_copy),
+                FadeOut(wave_label_4_copy),
+                FadeOut(axis_3),
+                FadeOut(axis_4),
+                FadeOut(dots_curve_5),
+                FadeOut(dots_curve_6),
+                # FadeOut(),
+                # FadeOut(),
+                run_time=2)
 
+        self.play(
+                  FadeIn(all_svgs[5:15]),
+                  FadeIn(all_svgs[0][15:]),
+                  FadeIn(all_svgs[0][5:14]), 
+                  run_time=2)        
+        self.add(all_svgs[:15], all_svgs[16])
+        self.remove(all_svgs[7]); self.add(all_svgs[7]) 
+
+        #Ok now switch to #2 input. 
+        self.wait()
+        example_index=226
+        draw_inputs(self, activations, all_svgs, reset=False, example_index=example_index, wait=0)
+        draw_embeddings(self, activations, all_svgs, reset=False, example_index=example_index, wait=0, colormap=black_to_tan_hex)
+        draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_mlp_3(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+        draw_logits(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex, temperature=25.0)
+        self.add(all_svgs[:15], all_svgs[16])
+        self.remove(all_svgs[7]); self.add(all_svgs[7])  
+        self.wait()      
+
+        #P43a - Ok this could be cool and kinda simple.
+        #Fade out the guts of the attention layer, bring in cos(x) cos(y) on top of eachother with 
+        # a plus sine - maybe elemtary school arithmetic style. 
+
+
+        self.wait()
+
+        # self.remove(all_svgs[5][10])
+        # self.remove(all_svgs[5][1:10])
+        # wave_label_1.move_to([-.45, 0.5, 0])
+        # wave_label_3.move_to([-.45, 0., 0])
+
+        addition_line=Line(start=[-1.13, -0.3, 0], end=[0.6, -0.3, 0])
+        addition_line.set_stroke(width=2)
+        addition_line.set_color(WHITE)
+        plus_sign=Tex('+', font_size=28)
+        plus_sign.set_color(WHITE)
+        plus_sign.move_to([0.5, -0.1, 0])
+
+        self.play(FadeOut(all_svgs[6:8]), 
+                  FadeOut(all_svgs[12:14]), 
+                  FadeOut(all_svgs[5][0]),
+                  FadeOut(all_svgs[5][11:]),
+                  run_time=2)
+        self.play(wave_label_1.animate.move_to([-.45, 0.5, 0]),
+                  wave_label_3.animate.move_to([-.45, 0., 0]),
+                  run_time=3)
+        self.play(ShowCreation(addition_line), ShowCreation(plus_sign), run_time=2)
+        self.wait()
+
+        #AH yeah draw nice horizontal line and plus sign let's go
 
 
         # self.add(wave_label_1_copy, wave_label_2_copy)
@@ -486,6 +551,7 @@ class P41_45(InteractiveScene):
         # self.add(axis_4)
         # self.add(dots_curve_5, dots_curve_6)
 
+        #Ok cool now we cut to the clock again. Probably a good spot to start a new scene. 
 
 
         self.wait(20)
