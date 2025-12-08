@@ -17,6 +17,10 @@ FRESH_TAN='#dfd0b9'
 CYAN='#00FFFF'
 MAGENTA='#FF00FF'
 
+resolution=113
+svg_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/graphics/to_manim')
+data_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
+
 def viridis_hex(value, vmin, vmax):
     """
     Map a scalar `value` in [vmin, vmax] to a Viridis color (hex string).
@@ -198,8 +202,35 @@ def draw_logits(self, activations, all_svgs, reset=False, example_index=0, wait=
             if wait!=0.0: self.wait(wait)
 
 
-svg_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/graphics/to_manim')
-data_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
+alphas_1=np.linspace(0, 1, resolution) #Crank up here for better spatial resolution I think
+def param_surface(u, v, surf_array, scale=0.15):
+    u_idx = np.abs(alphas_1 - u).argmin()
+    v_idx = np.abs(alphas_1 - v).argmin()
+    try:
+        z = scale*surf_array[v_idx, u_idx] #Add vertical scaling here?
+    except IndexError:
+        z = 0
+    return np.array([u, v, z])
+
+
+def surf_func(u, v, axes, surf_array, scale=1.0):
+    # Map u,v from [0,1] to your data indices
+    i = int(u * (surf_array.shape[0] - 1))
+    j = int(v * (surf_array.shape[1] - 1))
+    
+    # Get data coordinates
+    x = u * 113  # or whatever your x range is
+    y = v * 113
+    z = surf_array[i, j] * scale
+    
+    # Transform to axes coordinate system
+    return axes.c2p(x, y, z)
+
+
+class Dot3D(Sphere):
+    def __init__(self, center=ORIGIN, radius=0.05, **kwargs):
+        super().__init__(radius=radius, **kwargs)
+        self.move_to(center)
 
 
 class P44_50(InteractiveScene):
@@ -414,6 +445,31 @@ class P44_50(InteractiveScene):
         # When I need to, to show the composition.
         # Let me jump to a 3d version of this scene and then come back
 
+        # Ok so for now at least, I'm going to blend these 2d and 3d scenes in premiere. 
+        # So what I need here then is an x-sweep, and then a y-sweep. Let's do it. 
+
+        # Ok faking x vs y is getting annoying let me go create a separation x-first activation cache. 
+        # Or I guess I've kinda setup this up for 
+        # I think I should make a new activation cache...
+
+        # Eh that doesn't quite get b/c activations is a global deal
+        # Maybe the easy thing is to load all activations, and then compute the "magic indices"
+        # that let me grab iso y. That's probaby reasonably straight forward, and it's easy to validate. 
+        # Let's try that next. 
+
+
+        self.wait()
+
+        for i in range(p):
+            draw_inputs(self, activations, all_svgs, reset=False, example_index=i, wait=0)
+            draw_embeddings(self, activations, all_svgs, reset=False, example_index=i, wait=0, colormap=black_to_tan_hex)
+            draw_attention_values(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+            draw_attention_patterns(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+            draw_mlp_1(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+            draw_mlp_2(self, activations, all_svgs, reset=False, example_index=example_index, wait=0.0, colormap=black_to_tan_hex)
+            self.wait(0.2)
+
+
 
 
 
@@ -425,6 +481,10 @@ class P44_50(InteractiveScene):
 
 class P45_3D(InteractiveScene):
     def construct(self): 
+
+        mlp_hook_pre=np.load(data_dir/'mlp_hook_pre.npy')
+
+
         p=113
 
         axes_1 = ThreeDAxes(
@@ -440,26 +500,107 @@ class P45_3D(InteractiveScene):
                 "include_numbers": False,
                 "include_tip": True,
                 "stroke_width":2,
-                "tip_config": {"width":0.015, "length":0.015}
+                "tip_config": {"width":0.05, "length":0.05}
                 }
         )
 
 
-
+        #May want to rotate these labels, we'll see. 
         x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
-        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), LEFT, buff=0.1).set_color(CHILL_BROWN)
+        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
         axes_1_group=VGroup(axes_1, x_label, y_label)
+        x_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [0, 0, 1])
+        axes_1[0].rotate(DEGREES*90, [1, 0, 0])
+        axes_1[1].rotate(DEGREES*90, [0, 1, 0])
 
-        self.add(axes_1_group)
+
+
+        #Ok I'm thinking 331 and 106
+        #106 looks pretty cosine-y
+        #331 looks pretty sine-y
+        #let' stry that and see how we do here. 
+
+        neuron_idx_1=106
+        # x_sweep=mlp_hook_pre[:,0,2,neuron_idx_1]
+        neuron_1_mean=np.mean(mlp_hook_pre[:,:,2, neuron_idx_1])-0.20 #Eh?
+
+        pts_1_x=Group()
+        for j in range(p):
+            x = j
+            y = (mlp_hook_pre[j, 0, 2, neuron_idx_1]-neuron_1_mean)
+            pt = Dot3D(axes_1.c2p(x, 0, y), radius=0.02) #, color=FRESH_TAN, stroke_width=0)
+            pt.set_color(FRESH_TAN)
+            pts_1_x.add(pt)
+
+        pts_1_y=Group()
+        for j in range(p):
+            x = j
+            y = (mlp_hook_pre[0, j, 2, neuron_idx_1]-neuron_1_mean)
+            pt = Dot3D(axes_1.c2p(0, x, y), radius=0.02) #, color=FRESH_TAN, stroke_width=0)
+            pt.set_color(FRESH_TAN)
+            pts_1_y.add(pt)
+
+        # self.frame.reorient(0, 89, 0, (1.19, 0.17, 0.09), 9.02)
+        self.frame.reorient(0, 90, 0)
+        self.add(axes_1[0], x_label, axes_1[2]) #No y-label yet, just x. 
+        self.wait()
+        self.add(pts_1_x)
+
+        self.add(axes_1[1], y_label, pts_1_y)
+
+        
+
+
+
+
+        self.wait()
+
+
+
+
+        neuron_idx= 331 #106 #343 #192
+        neuron_surface_mean=np.mean(mlp_hook_pre[:,:,2,neuron_idx])
+
+        surf_func_with_axes = partial(
+            surf_func, 
+            axes=axes_1,
+            surf_array=mlp_hook_pre[:,:,2,neuron_idx]-neuron_surface_mean, 
+            scale=1.0
+        )
+
+        surface = ParametricSurface(
+            surf_func_with_axes,  
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+
+        # surf_func=partial(param_surface, surf_array=mlp_hook_pre[:,:,2,neuron_idx], scale=0.15)
+        # surface = ParametricSurface(
+        #     surf_func,  
+        #     u_range=[0, 1.0],
+        #     v_range=[0, 1.0],
+        #     resolution=(resolution, resolution),
+        # )
+
+        ts = TexturedSurface(surface, str(data_dir/('activations_'+str(neuron_idx).zfill(3)+'.png')))
+        ts.set_shading(0.0, 0.1, 0)
+
+
+        self.wait()
+        self.add(ts)
 
 
 
 
 
 
+        # self.add(axes_1_group)
 
         #When I need to do hand-offs/merges, orientation will need to be: 
-        self.frame.reorient(0, 89, 0, (1.19, 0.17, 0.09), 9.02)
+        
 
         # At that point sometning like this should kinda work - I can figure out in a bit
         # if I need to make some of these shift earlier
