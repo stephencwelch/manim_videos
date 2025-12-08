@@ -372,9 +372,6 @@ class P44_50(InteractiveScene):
         self.wait()
 
 
-
-
-
         #Ok so I think this is just like p30ish, where I fade out everything past the second MLP layer?
         mid_mlp_fade_group=Group(all_svgs[14][9],
                                 all_svgs[14][:3], 
@@ -388,7 +385,8 @@ class P44_50(InteractiveScene):
 
         self.wait()
         self.play(FadeOut(mid_mlp_fade_group), 
-                 self.frame.animate.reorient(0, 0, 0, (1.32, 0.17, 0.0), 8.35), 
+                 # self.frame.animate.reorient(0, 90, 0, (1.32, 0.17, 0.0), 8.35), 
+                 self.frame.animate.reorient(0, 89, 0, (1.19, 0.17, 0.09), 9.02),
                  run_time=4)
         self.wait()
 
@@ -410,8 +408,11 @@ class P44_50(InteractiveScene):
         # So I think It makes sense to "flip up" to network into 3D land
         # Now I don't think I actually do all my stuff in the same scene,
         # But I do think for a couple I can/should. 
-
-
+        # Ok I've got the setup in 3D rollin now, 
+        # Now I'm thinking Initially the 3d part of this will be a separate secene
+        # I just need/want to keep the FoVs close so I can bring them together
+        # When I need to, to show the composition.
+        # Let me jump to a 3d version of this scene and then come back
 
 
 
@@ -419,6 +420,59 @@ class P44_50(InteractiveScene):
 
         self.wait(20)
         self.embed()
+
+
+
+class P45_3D(InteractiveScene):
+    def construct(self): 
+        p=113
+
+        axes_1 = ThreeDAxes(
+            x_range=[0, p, 10],
+            y_range=[0, p, 10],
+            z_range=[-1, 1, 1],
+            width=4,
+            height=4,
+            depth=2,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2,
+                "tip_config": {"width":0.015, "length":0.015}
+                }
+        )
+
+
+
+        x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
+        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), LEFT, buff=0.1).set_color(CHILL_BROWN)
+        axes_1_group=VGroup(axes_1, x_label, y_label)
+
+        self.add(axes_1_group)
+
+
+
+
+
+
+
+        #When I need to do hand-offs/merges, orientation will need to be: 
+        self.frame.reorient(0, 89, 0, (1.19, 0.17, 0.09), 9.02)
+
+        # At that point sometning like this should kinda work - I can figure out in a bit
+        # if I need to make some of these shift earlier
+        # x/y labels get a bit funky with rotation, will probably have to noodle on that. 
+        axes_1_group.move_to([5, 0, 0])
+        axes_1_group.rotate(-20*DEGREES, [0, 0, 1])
+        axes_1_group.rotate(35*DEGREES, [1, 0, 0])
+
+
+        self.wait(20)
+        self.embed()
+
+
 
 
 
