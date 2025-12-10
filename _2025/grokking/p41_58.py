@@ -266,7 +266,7 @@ class P44_49(InteractiveScene):
             activations = pickle.load(f)
 
         all_svgs=Group()
-        for svg_file in svg_files[1:25]: #Expand if I add more artboards
+        for svg_file in svg_files[1:28]: #Expand if I add more artboards
             svg_image=SVGMobject(str(svg_file))
             all_svgs.add(svg_image[1:]) #Thowout background
 
@@ -381,23 +381,23 @@ class P44_49(InteractiveScene):
         wave_label_1 =  Tex(r'\cos \big(\tfrac{8\pi}{113}x\big)')
         wave_label_1.set_color(YELLOW)
         wave_label_1.scale(0.45*1.5)
-        wave_label_1.move_to([-0.9, 3.65, 0])
+        wave_label_1.move_to([-0.85, 3.5, 0])
 
 
         wave_label_2 = Tex(r'\sin \big(\tfrac{8\pi}{113}x\big)')
         wave_label_2.set_color(MAGENTA)
         wave_label_2.scale(0.45*1.5)
-        wave_label_2.move_to([-0.95, 2.65, 0])
+        wave_label_2.move_to([-0.9, 2.5, 0])
 
         wave_label_3 = Tex(r'\cos \big(\tfrac{8\pi}{113}y\big)')
         wave_label_3.set_color(CYAN)
         wave_label_3.scale(0.45*1.5)
-        wave_label_3.move_to([-0.9, -2.2, 0])
+        wave_label_3.move_to([-0.9, -2.5, 0])
 
         wave_label_4 = Tex(r'\sin \big(\tfrac{8\pi}{113}y\big)')
         wave_label_4.set_color(RED)
         wave_label_4.scale(0.45*1.5)
-        wave_label_4.move_to([-0.9, -3.2, 0])
+        wave_label_4.move_to([-0.9, -3.6, 0])
 
 
         self.add(all_svgs[18])
@@ -407,10 +407,10 @@ class P44_49(InteractiveScene):
         self.remove(all_svgs[7]); self.add(all_svgs[7]) 
         self.remove(all_svgs[9]); self.add(all_svgs[9]) 
         
-        probe_group_1=Group(axis_2, curve_3, curve_4, wave_label_3, wave_label_4, y_label)
+        probe_group_1=Group(axis_2, curve_3, curve_4, y_label) #wave_label_3, wave_label_4, 
         probe_group_1.shift([0, -0.3, 0])
 
-        probe_group_2=Group(axis_1, curve_1, curve_2, wave_label_1, wave_label_2, x_label)
+        probe_group_2=Group(axis_1, curve_1, curve_2, x_label) #wave_label_1, wave_label_2
         probe_group_2.shift([0, -0.15, 0])
 
         self.wait()
@@ -429,8 +429,11 @@ class P44_49(InteractiveScene):
         self.wait()
         self.play(FadeOut(mid_mlp_fade_group), 
                  # self.frame.animate.reorient(0, 90, 0, (1.32, 0.17, 0.0), 8.35), 
-                 self.frame.animate.reorient(0, 0, 0, (1.19, 0.17, 0.09), 9.02),
+                 # self.frame.animate.reorient(0, 0, 0, (1.19, 0.17, 0.09), 9.02),
+                 self.frame.animate.reorient(0, 0, 0, (2.37, -0.07, 0.09), 10.33), #Moar zoomed out/space
                  run_time=4)
+        self.wait()
+        self.play(Write(all_svgs[25])) #Little yellow arrow bro
         self.wait()
 
 
@@ -469,26 +472,64 @@ class P44_49(InteractiveScene):
         # 2. Zoom out ot "final ish view"
         # 3. Bring in dotted arrows pointing to surfaces like in moch up. 
 
-
-
-        # mid_mlp_fade_group=Group(all_svgs[14][9],
-        #                         all_svgs[14][:3], 
-        #                         all_svgs[10],
-        #                         all_svgs[11],
-        #                         all_svgs[0][7:14],
-        #                         all_svgs[0][-1],
-        #                         all_svgs[8][-105:],
-        #                         all_svgs[9][-14:],
-        #                         all_svgs[14][-20:])
-
-
-        self.add(mid_mlp_fade_group)
-
-        self.frame.reorient(0, 0, 0, (0.03, 0.17, 0.2), 12.02)
-
-
-        self.remove(all_svgs[18])
+        #elipses get lost which is a little annoying, but I'm going to keep moving for now. 
+        self.wait()
+        self.remove(all_svgs[18], all_svgs[25])
+        self.play(
+            FadeIn(all_svgs[8][-105:]),
+            FadeIn(all_svgs[9][-14:]),
+            FadeIn(all_svgs[14][:9]),
+            FadeIn(all_svgs[14][10:]),
+            probe_group_1.animate.move_to([-6.7, -3.05, 0]),
+            wave_label_3.animate.scale(1.2).move_to([-7.8, -4.1, 0]),
+            wave_label_4.animate.scale(1.2).move_to([-5.7, -4.1, 0]),
+            probe_group_2.animate.move_to([-6.7, 3.3, 0]),
+            wave_label_2.animate.scale(1.2).move_to([-5.7, 2.3, 0]),
+            wave_label_1.animate.scale(1.2).move_to([-7.8, 2.3, 0]),
+            self.frame.animate.reorient(0, 0, 0, (1.65, 0.11, 0.2), 12.32),
+            FadeIn(all_svgs[22][:2]), 
+            FadeIn(all_svgs[22][4:6]),
+            run_time=6)
         self.add(all_svgs[21])
+        self.play(Write(all_svgs[26])) #Little yellow arrow bro
+        self.wait()
+
+
+
+        # probe_group_2.move_to([-6.6, 3.3, 0])
+
+        # self.add(all_svgs[8])
+        # self.add(all_svgs[9])
+        # self.add(all_svgs[14][:9])
+        # self.add(all_svgs[14][10:])
+
+
+        # # self.add(mid_mlp_fade_group) 
+
+        # probe_group_1.move_to([-6.1, -3.05, 0])
+        # wave_label_3.scale(1.2)
+        # wave_label_4.scale(1.2)
+        # wave_label_3.move_to([-7.3, -4.1, 0])
+        # wave_label_4.move_to([-5.1, -4.1, 0])
+
+        # probe_group_2.move_to([-6.1, 3.3, 0])
+        # wave_label_1.scale(1.2)
+        # wave_label_2.scale(1.2)
+
+        # wave_label_1.move_to([-7.8, 2.3, 0])
+        # wave_label_2.move_to([-5.7, 2.3, 0])
+
+
+        # # self.frame.reorient(0, 0, 0, (0.03, 0.17, 0.2), 12.02)
+        # self.frame.reorient(0, 0, 0, (1.57, 0.09, 0.2), 12.02)
+        # self.remove(all_svgs[18])
+        # self.add(all_svgs[21])
+
+
+        # self.add(all_svgs[22][:2])
+        # self.add(all_svgs[22][4:6])
+
+        # self.remove(all_svgs[22])
 
         #Next -> get probe groups into good locations. 
 
