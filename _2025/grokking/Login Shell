@@ -1,0 +1,648 @@
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 495                                     
+ManimGL v1.7.2
+In [1]: probe_group_1.move_to([-5, 3, 0])                                                                                                            
+Out[1]: <manimlib.mobject.mobject.Group at 0x16df7c050>                                                                                              
+In [2]: probe_group_1.move_to([-5, -3, 0])                                                                                                           
+Out[2]: <manimlib.mobject.mobject.Group at 0x16df7c050>                                                                                              
+In [3]: probe_group_1.move_to([-7, -3, 0])                                                                                                           
+Out[3]: <manimlib.mobject.mobject.Group at 0x16df7c050>                                                                                              
+In [4]: probe_group_1.move_to([-6, -3, 0])                                                                                                           
+Out[4]: <manimlib.mobject.mobject.Group at 0x16df7c050>                                                                                              
+In [5]: probe_group_1.move_to([-6.5, -3, 0])                                                                                                         
+Out[5]: <manimlib.mobject.mobject.Group at 0x16df7c050>                                                                                              
+In [6]: probe_group_1.move_to([-6.5, -2.9, 0])                                                                                                       
+Out[6]: <manimlib.mobject.mobject.Group at 0x16df7c050>                                                                                              
+In [7]: probe_group_1.move_to([-6.5, -2.95, 0])                                                                                                      
+Out[7]: <manimlib.mobject.mobject.Group at 0x16df7c050>                                                                                              
+In [8]: wave_label_3.move_to([-8.0, -2.5, 0])                                                                                                        
+Out[8]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                        
+In [9]: wave_label_3.move_to([-7.0, -2.5, 0])                                                                                                        
+Out[9]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                        
+In [10]: wave_label_3.move_to([-7.0, -2.0, 0])                                                                                                       
+Out[10]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                       
+In [11]: wave_label_3.move_to([-7.0, -2.2, 0])                                                                                                       
+Out[11]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                       
+In [12]: wave_label_3.scale(1.2)                                                                                                                     
+Out[12]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                       
+In [13]: wave_label_3.move_to([-7.0, -2.1, 0])                                                                                                       
+Out[13]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                       
+In [14]: wave_label_4.scale(1.2)                                                                                                                     
+Out[14]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16df15690>                                                                                       
+In [15]: wave_label_4.move_to([-5.0, -3.1, 0])                                                                                                       
+Out[15]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16df15690>                                                                                       
+In [16]: wave_label_4.move_to([-5.0, -4.1, 0])                                                                                                       
+Out[16]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16df15690>                                                                                       
+In [17]: wave_label_4.move_to([-6.0, -4.1, 0])                                                                                                       
+Out[17]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16df15690>                                                                                       
+In [18]: wave_label_4.move_to([-6.5, -4.1, 0])                                                                                                       
+Out[18]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16df15690>                                                                                       
+In [19]: wave_label_4.move_to([-6.6, -4.1, 0])                                                                                                       
+Out[19]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16df15690>                                                                                       
+In [20]: wave_label_4.move_to([-6.4, -4.1, 0])                                                                                                       
+Out[20]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16df15690>                                                                                       
+In [21]: wave_label_3.move_to([-8.0, -4.1, 0])                                                                                                       
+Out[21]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                       
+In [22]: wave_label_3.move_to([-8.4, -4.1, 0])                                                                                                       
+Out[22]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dc74390>                                                                                       
+In [23]: probe_group_2.move_to([-6.5, 2.95, 0])                                                                                                      
+Out[23]: <manimlib.mobject.mobject.Group at 0x137de3d90>                                                                                             
+In [24]: wave_label_1.scale(1.2)                                                                                                                     
+Out[24]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dcb2410>                                                                                       
+In [25]: wave_label_2.scale(1.2)                                                                                                                     
+Out[25]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dcc00d0>                                                                                       
+In [26]: probe_group_2.move_to([-6.5, 3.4, 0])                                                                                                       
+Out[26]: <manimlib.mobject.mobject.Group at 0x137de3d90>                                                                                             
+In [27]: probe_group_2.move_to([-6.5, 3.3, 0])                                                                                                       
+Out[27]: <manimlib.mobject.mobject.Group at 0x137de3d90>                                                                                             
+In [28]: probe_group_2.move_to([-6.5, 3.35, 0])                                                                                                      
+Out[28]: <manimlib.mobject.mobject.Group at 0x137de3d90>                                                                                             
+In [29]: wave_label_1.move_to([-8.4, 2.1, 0])                                                                                                        
+Out[29]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dcb2410>                                                                                       
+In [30]: wave_label_1.move_to([-8.4, 2.2, 0])                                                                                                        
+Out[30]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dcb2410>                                                                                       
+In [31]: wave_label_1.move_to([-6.4, 2.2, 0])                                                                                                        
+Out[31]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dcb2410>                                                                                       
+In [32]: wave_label_1.move_to([-8.4, 2.2, 0])                                                                                                        
+Out[32]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dcb2410>                                                                                       
+In [33]: wave_label_2.move_to([-6.4, 2.2, 0])                                                                                                        
+Out[33]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16dcc00d0>                                                                                       
+
+In [34]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 485                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: checkpoint_paste() # (3 lines)                                                                                                               
+In [2]: checkpoint_paste() # (11 lines)                                                                                                              
+Out[2]: <manimlib.mobject.svg.tex_mobject.Tex at 0x147d94290>                                                                                        
+                                                                                                                                                     
+In [3]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 502                                     
+ManimGL v1.7.2                                                                                                                                       
+                                                                                                                                                     
+In [1]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 502                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: probe_group_1.move_to([-4.5, -2.95, 0])                                                                                                      
+Out[1]: <manimlib.mobject.mobject.Group at 0x153559b50>                                                                                              
+In [2]: probe_group_1.move_to([-5.5, -2.95, 0])                                                                                                      
+Out[2]: <manimlib.mobject.mobject.Group at 0x153559b50>                                                                                              
+                                                                                                                                                     
+In [3]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 485                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: checkpoint_paste() # (3 lines)                                                                                                               
+In [2]: probe_group_1.move_to([-5.5, -2.95, 0])                                                                                                      
+Out[2]: <manimlib.mobject.mobject.Group at 0x14dd0ac90>                                                                                              
+In [3]: wave_label_3.scale(1.2)                                                                                                                      
+Out[3]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f715d10>                                                                                        
+In [4]: wave_label_4.scale(1.2)                                                                                                                      
+Out[4]: <manimlib.mobject.svg.tex_mobject.Tex at 0x2a14425d0>                                                                                        
+In [5]: wave_label_3.move_to([-6.4, -4.1, 0])                                                                                                        
+Out[5]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f715d10>                                                                                        
+In [6]: wave_label_4.move_to([-4.4, -4.1, 0])                                                                                                        
+Out[6]: <manimlib.mobject.svg.tex_mobject.Tex at 0x2a14425d0>                                                                                        
+In [7]: wave_label_3.move_to([-7.4, -4.1, 0])                                                                                                        
+Out[7]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f715d10>                                                                                        
+In [8]: wave_label_4.move_to([-5.4, -4.1, 0])                                                                                                        
+Out[8]: <manimlib.mobject.svg.tex_mobject.Tex at 0x2a14425d0>                                                                                        
+In [9]: wave_label_4.move_to([-5.2, -4.1, 0])                                                                                                        
+Out[9]: <manimlib.mobject.svg.tex_mobject.Tex at 0x2a14425d0>                                                                                        
+In [10]: wave_label_3.move_to([-7.2, -4.1, 0])                                                                                                       
+Out[10]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f715d10>                                                                                       
+In [11]: wave_label_3.move_to([-7.0, -4.1, 0])                                                                                                       
+Out[11]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f715d10>                                                                                       
+In [12]: wave_label_4.move_to([-5.0, -4.1, 0])                                                                                                       
+Out[12]: <manimlib.mobject.svg.tex_mobject.Tex at 0x2a14425d0>                                                                                       
+In [13]: wave_label_3.move_to([-7.2, -4.1, 0])                                                                                                       
+Out[13]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f715d10>                                                                                       
+In [14]: probe_group_2.move_to([-4.5, 3.35, 0])                                                                                                      
+Out[14]: <manimlib.mobject.mobject.Group at 0x2a14abf50>                                                                                             
+In [15]: probe_group_2.move_to([-5.5, 3.35, 0])                                                                                                      
+Out[15]: <manimlib.mobject.mobject.Group at 0x2a14abf50>                                                                                             
+In [16]: wave_label_1.scale(1.2)                                                                                                                     
+Out[16]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f686dd0>                                                                                       
+In [17]: wave_label_2.scale(1.2)                                                                                                                     
+Out[17]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f6d1f50>                                                                                       
+In [18]: wave_label_1.move_to([-7.4, 2.2, 0])                                                                                                        
+Out[18]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f686dd0>                                                                                       
+In [19]: wave_label_2.move_to([-5.4, 2.2, 0])                                                                                                        
+Out[19]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f6d1f50>                                                                                       
+In [20]: wave_label_2.move_to([-5.0, 2.2, 0])                                                                                                        
+Out[20]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f6d1f50>                                                                                       
+In [21]: wave_label_1.move_to([-7.2, 2.2, 0])                                                                                                        
+Out[21]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f686dd0>                                                                                       
+In [22]: wave_label_1.move_to([-7.2, 2.3, 0])                                                                                                        
+Out[22]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f686dd0>                                                                                       
+In [23]: wave_label_2.move_to([-5.0, 2.3, 0])                                                                                                        
+Out[23]: <manimlib.mobject.svg.tex_mobject.Tex at 0x28f6d1f50>                                                                                       
+                                                                                                                                                     
+In [24]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 507                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: self.add_all_svgs[22]                                                                                                                        
+---------------------------------------------------------------------------                                                                          
+AttributeError                            Traceback (most recent call last)                                                                          
+Cell In[1], line 1                                                                                                                                   
+----> 1 self.add_all_svgs[22]                                                                                                                        
+        self = <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 object at 0x137789f10>                                                      
+
+AttributeError: 'P44_49' object has no attribute 'add_all_svgs'
+In [2]: self.add(all_svgs[22]                                                                                                                        
+   ...:                                                                                                                                              
+In [2]:                                                                                                                                              
+In [2]: self.add(all_svgs[22])                                                                                                                       
+In [3]: self.remove(all_svgs[22])                                                                                                                    
+In [4]: self.add(all_svgs[22][:20])                                                                                                                  
+In [5]: self.remove(all_svgs[22])                                                                                                                    
+In [6]: self.add(all_svgs[22][:10])                                                                                                                  
+In [7]: self.remove(all_svgs[22])                                                                                                                    
+In [8]: self.add(all_svgs[22][0])                                                                                                                    
+In [9]: self.add(all_svgs[22][:1])                                                                                                                   
+In [10]: self.add(all_svgs[22][:5])                                                                                                                  
+                                                                                                                                                     
+In [11]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 504                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: self.remove(all_svgs[22])                                                                                                                    
+In [2]: self.add(all_svgs[22][:1])                                                                                                                   
+In [3]: self.add(all_svgs[22][:2])                                                                                                                   
+In [4]: self.add(all_svgs[22][3])                                                                                                                    
+In [5]: self.add(all_svgs[22][4])                                                                                                                    
+In [6]: self.add(all_svgs[22][4:5])                                                                                                                  
+In [7]: self.add(all_svgs[22][4:6])                                                                                                                  
+In [8]: self.remove(all_svgs[22])                                                                                                                    
+In [9]: self.add(all_svgs[22][:2])                                                                                                                   
+In [10]: self.add(all_svgs[22][4:6])                                                                                                                 
+                                                                                                                                                     
+In [11]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 465                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: self.add(all_svgs[9])                                                                                                                        
+In [2]: self.add(all_svgs[8])                                                                                                                        
+In [3]: self.add(all_svgs[9])                                                                                                                        
+In [4]: self.add(all_svgs[11])                                                                                                                       
+In [5]: self.add(all_svgs[12])                                                                                                                       
+In [6]: self.add(all_svgs[13])                                                                                                                       
+In [7]: self.add(all_svgs[14])                                                                                                                       
+                                                                                                                                                     
+In [8]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 485                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: self.add(all_svgs[14][:5])                                                                                                                   
+In [2]: self.add(all_svgs[14][:5])                                                                                                                   
+In [3]: self.add(all_svgs[14][:8])                                                                                                                   
+In [4]: self.add(all_svgs[14][:10])                                                                                                                  
+In [5]: self.remove(all_svgs[14])                                                                                                                    
+In [6]: self.add(all_svgs[14][:8])                                                                                                                   
+In [7]: self.add(all_svgs[14][:9])                                                                                                                   
+In [8]: self.add(all_svgs[14][10:])                                                                                                                  
+In [9]: checkpoint_paste() # (20 lines)                                                                                                              
+                                                                                                                                                     
+In [10]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 531                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: probe_group_1.move_to([-5.8, -2.95, 0])                                                                                                      
+Out[1]: <manimlib.mobject.mobject.Group at 0x146f6fb10>                                                                                              
+In [2]: probe_group_1.move_to([-6.0, -2.95, 0])                                                                                                      
+Out[2]: <manimlib.mobject.mobject.Group at 0x146f6fb10>                                                                                              
+In [3]: probe_group_1.move_to([-6.1, -2.95, 0])                                                                                                      
+Out[3]: <manimlib.mobject.mobject.Group at 0x146f6fb10>                                                                                              
+In [4]: probe_group_1.move_to([-6.1, -3.1, 0])                                                                                                       
+Out[4]: <manimlib.mobject.mobject.Group at 0x146f6fb10>                                                                                              
+In [5]: probe_group_1.move_to([-6.1, -3.05, 0])                                                                                                      
+Out[5]: <manimlib.mobject.mobject.Group at 0x146f6fb10>                                                                                              
+In [6]: probe_group_2.move_to([-6.1, 3.3, 0])                                                                                                        
+Out[6]: <manimlib.mobject.mobject.Group at 0x146d29a10>                                                                                              
+                                                                                                                                                     
+In [7]: quit                                                                                                                                         
+Error in callback <function InteractiveSceneEmbed.auto_reload.<locals>.pre_cell_func at 0x146d360c0> (for pre_run_cell), with arguments args (<Execut​‌​
+ionInfo object at 126b52c90, raw_cell="quit" store_history=True silent=False shell_futures=True cell_id=None>,),kwargs {}:                           
+  File ~/manim/videos/_2025/grokking/p41_58.py:484
+    self.play(                                                 
+             ^
+SyntaxError: '(' was never closed                                                                                                                    
+
+^L
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 483                                     
+ManimGL v1.7.2                                                                                                                                       
+Traceback (most recent call last):                                                                                                                   
+  File "/opt/anaconda3/bin/manimgl", line 8, in <module>                                                                                             
+    sys.exit(main())                                                                                                                                 
+             ^^^^^^                                                                                                                                  
+  File "/Users/stephen/manim/manimlib/__main__.py", line 61, in main
+    run_scenes()                                               
+  File "/Users/stephen/manim/manimlib/__main__.py", line 37, in run_scenes
+    scenes = manimlib.extract_scene.main(scene_config, run_config)                                                                                   
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephen/manim/manimlib/extract_scene.py", line 189, in main
+    module = get_module(run_config)                                                                                                                  
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephen/manim/manimlib/extract_scene.py", line 182, in get_module
+    module = ModuleLoader.get_module(run_config.file_name, run_config.is_reload)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephen/manim/manimlib/module_loader.py", line 49, in get_module
+    spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1074, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/Users/stephen/manim/videos/_2025/grokking/p41_58.py", line 484
+    self.play(
+             ^
+SyntaxError: '(' was never closed
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % quit                                                                                                            
+zsh: command not found: quit
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 472                                     
+ManimGL v1.7.2                                                                                                                                       
+Traceback (most recent call last):                                
+  File "/opt/anaconda3/bin/manimgl", line 8, in <module>                  
+    sys.exit(main())                                                                                                                                 
+             ^^^^^^                
+  File "/Users/stephen/manim/manimlib/__main__.py", line 61, in main            
+    run_scenes()                                                                
+  File "/Users/stephen/manim/manimlib/__main__.py", line 37, in run_scenes      
+    scenes = manimlib.extract_scene.main(scene_config, run_config)             
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephen/manim/manimlib/extract_scene.py", line 189, in main
+    module = get_module(run_config)                                    
+             ^^^^^^^^^^^^^^^^^^^^^^                                          
+  File "/Users/stephen/manim/manimlib/extract_scene.py", line 182, in get_module
+    module = ModuleLoader.get_module(run_config.file_name, run_config.is_reload)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephen/manim/manimlib/module_loader.py", line 49, in get_module
+    spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module                                                                            
+  File "<frozen importlib._bootstrap_external>", line 1074, in get_code                                                                              
+  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed                                                                       
+  File "/Users/stephen/manim/videos/_2025/grokking/p41_58.py", line 474                                                                              
+    self.play(
+             ^
+SyntaxError: '(' was never closed
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 472                                     
+ManimGL v1.7.2                     
+Traceback (most recent call last):                                              
+  File "/opt/anaconda3/bin/manimgl", line 8, in <module>                        
+    sys.exit(main())                                                            
+             ^^^^^^                                                            
+  File "/Users/stephen/manim/manimlib/__main__.py", line 61, in main
+    run_scenes()                                                          
+  File "/Users/stephen/manim/manimlib/__main__.py", line 37, in run_scenes
+    scenes = manimlib.extract_scene.main(scene_config, run_config)           
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^              
+  File "/Users/stephen/manim/manimlib/extract_scene.py", line 189, in main      
+    module = get_module(run_config)                                             
+             ^^^^^^^^^^^^^^^^^^^^^^                                            
+  File "/Users/stephen/manim/manimlib/extract_scene.py", line 182, in get_module
+    module = ModuleLoader.get_module(run_config.file_name, run_config.is_reload)                                                                     
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                     
+  File "/Users/stephen/manim/manimlib/module_loader.py", line 49, in get_module
+    spec.loader.exec_module(module)                                                                                                                  
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module                                                                            
+  File "<frozen importlib._bootstrap_external>", line 1074, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/Users/stephen/manim/videos/_2025/grokking/p41_58.py", line 474                                                                              
+    self.play(
+             ^
+SyntaxError: '(' was never closed
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 473                                     
+ManimGL v1.7.2                                                                 
+In [1]: checkpoint_paste() # (17 lines)                                                                                                              
+---------------------------------------------------------------------------                                                                          
+AttributeError                            Traceback (most recent call last)
+Cell In[1], line 9                                                                                                                                   
+      1 self.remove(all_svgs[18])                                         
+      2 self.play(                                                           
+      3     FadeIn(all_svgs[8]),                                                
+      4     FadeIn(all_svgs[9]),                                                
+      5     FadeIn(all_svgs[14][:9]),                                           
+      6     FadeIn(all_svgs[14][10:]),                                         
+      7     probe_group_1.animate.move_to([-6.1, -3.05, 0]),                    
+      8     wave_label_3.animate.scale(1.2).move_to([-7.2, -4.1, 0]),                                                                                
+----> 9     wave_label_4.animatescale(1.2).move_to([-5.0, -4.1, 0]),                                                                                 
+        self = <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 object at 0x17fe2dc10>
+        all_svgs = <manimlib.mobject.mobject.Group object at 0x169c9c390>                                                                            
+        probe_group_1 = <manimlib.mobject.mobject.Group object at 0x29ee8fe10>                                                                       
+        wave_label_3 = <manimlib.mobject.svg.tex_mobject.Tex object at 0x29edfde10>
+        wave_label_4 = <manimlib.mobject.svg.tex_mobject.Tex object at 0x29ee2bb50>
+        probe_group_2 = <manimlib.mobject.mobject.Group object at 0x29ed52c10>
+        wave_label_2 = <manimlib.mobject.svg.tex_mobject.Tex object at 0x29edc0250>                                                                  
+        wave_label_1 = <manimlib.mobject.svg.tex_mobject.Tex object at 0x29ed734d0>
+        self.frame = <manimlib.camera.camera_frame.CameraFrame object at 0x17fe7c390>
+     10     probe_group_2.animate.move_to([-6.1, 3.3, 0]),
+     11     wave_label_2.animate.scale(1.2).move_to([-5.0, 2.3, 0]),                                                                                 
+     12     wave_label_1.animate.scale(1.2).move_to([-7.2, 2.3, 0]),
+     13     self.frame.animate.reorient(0, 0, 0, (1.57, 0.09, 0.2), 12.02),
+     14     FadeIn(all_svgs[22][:2]), 
+     15     FadeIn(all_svgs[22][4:6]),
+     16     run_time=6)
+     17 self.add(all_svgs[21])
+
+AttributeError: 'Tex' object has no attribute 'animatescale'
+In [2]: checkpoint_paste() # (17 lines)                                                                                                              
+                                                                                                                                                     
+In [3]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % quit                                                                                                            
+zsh: command not found: quit                                                                                                                         
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 472                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: checkpoint_paste() # (17 lines)                                                                                                              
+                                                                                                                                                     
+In [2]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 472                                     
+ManimGL v1.7.2                                                                                                                                       
+                                                                                                                                                     
+In [1]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 473                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: wave_label_1.move_to([-1.1, 3.65, 0])                                                                                                        
+Out[1]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e42d490>                                                                                        
+In [2]: wave_label_1.move_to([-0.8, 3.65, 0])                                                                                                        
+Out[2]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e42d490>                                                                                        
+In [3]: wave_label_1.move_to([-0.8, 3.45, 0])                                                                                                        
+Out[3]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e42d490>                                                                                        
+In [4]: wave_label_1.move_to([-0.8, 3.4, 0])                                                                                                         
+Out[4]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e42d490>                                                                                        
+In [5]: wave_label_1.move_to([-0.8, 3.5, 0])                                                                                                         
+Out[5]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e42d490>                                                                                        
+In [6]: wave_label_1.move_to([-0.75, 3.5, 0])                                                                                                        
+Out[6]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e42d490>                                                                                        
+In [7]: wave_label_1.move_to([-0.85, 3.5, 0])                                                                                                        
+Out[7]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e42d490>                                                                                        
+In [8]: wave_label_2.move_to([-0.9, 2.65, 0])                                                                                                        
+Out[8]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e450110>                                                                                        
+In [9]: wave_label_2.move_to([-0.9, 2.75, 0])                                                                                                        
+Out[9]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e450110>                                                                                        
+In [10]: wave_label_2.move_to([-0.9, 2.45, 0])                                                                                                       
+Out[10]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e450110>                                                                                       
+In [11]: wave_label_2.move_to([-0.9, 2.5, 0])                                                                                                        
+Out[11]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e450110>                                                                                       
+In [12]: wave_label_3.move_to([-0.9, -2.5, 0])                                                                                                       
+Out[12]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e48dc50>                                                                                       
+In [13]: wave_label_4.move_to([-0.9, -3.4, 0])                                                                                                       
+Out[13]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e603f50>                                                                                       
+In [14]: wave_label_4.move_to([-0.9, -3.6, 0])                                                                                                       
+Out[14]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e603f50>                                                                                       
+In [15]: wave_label_4.move_to([-0.9, -3.5, 0])                                                                                                       
+Out[15]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e603f50>                                                                                       
+In [16]: wave_label_4.move_to([-0.9, -3.6, 0])                                                                                                       
+Out[16]: <manimlib.mobject.svg.tex_mobject.Tex at 0x16e603f50>                                                                                       
+                                                                                                                                                     
+In [17]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 416                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: checkpoint_paste() # (16 lines)                                                                                                              
+                                                                                                                                                     
+In [2]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 435                                     
+ManimGL v1.7.2                                                                                                                                       
+Traceback (most recent call last):                                                                                                                   
+  File "/opt/anaconda3/bin/manimgl", line 8, in <module>                                                                                             
+    sys.exit(main())                                                                                                                                 
+             ^^^^^^                                                                                                                                  
+  File "/Users/stephen/manim/manimlib/__main__.py", line 61, in main               
+    run_scenes()                                                                   
+  File "/Users/stephen/manim/manimlib/__main__.py", line 39, in run_scenes    
+    scene.run()                                                                                                                                      
+  File "/Users/stephen/manim/manimlib/scene/scene.py", line 155, in run            
+    self.construct()                                                                 
+  File ".Users.stephen.manim.videos._2025.grokking.p41_58", line 430, in construct
+  File "/Users/stephen/manim/manimlib/scene/scene.py", line 321, in wrapper                                                                          
+    func(self, *args, **kwargs)                                     
+  File "/Users/stephen/manim/manimlib/scene/scene.py", line 581, in play   
+    animations = list(map(prepare_animation, proto_animations))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephen/manim/manimlib/animation/animation.py", line 213, in prepare_animation
+    raise TypeError(f"Object {anim} cannot be converted to an animation")
+TypeError: Object CameraFrame cannot be converted to an animation
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 435                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: self.play(Write(all_svgs[25]))                                                                                                               
+Out[1]: <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 at 0x13634b210>                                                                    
+                                                                                                                                                     
+In [2]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 435                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: self.play(Write(all_svgs[25]))                                                                                                               
+Out[1]: <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 at 0x14d86fb10>                                                                    
+In [2]: self.add(all_svgs[14][:9])                                                                                                                   
+In [3]: self.add(all_svgs[14][10:])                                                                                                                  
+In [4]: self.add(all_svgs[9])                                                                                                                        
+In [5]: self.add(all_svgs[8])                                                                                                                        
+In [6]: self.remove(all_svgs[18])                                                                                                                    
+                                                                                                                                                     
+In [7]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 475                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: checkpoint_paste() # (17 lines)                                                                                                              
+In [2]: probe_group_1.move_to([-6.1, -3.05, 0])                                                                                                      
+Out[2]: <manimlib.mobject.mobject.Group at 0x29ef547d0>                                                                                              
+In [3]: probe_group_1.move_to([-6.3, -3.05, 0])                                                                                                      
+Out[3]: <manimlib.mobject.mobject.Group at 0x29ef547d0>                                                                                              
+In [4]: probe_group_1.move_to([-6.5, -3.05, 0])                                                                                                      
+Out[4]: <manimlib.mobject.mobject.Group at 0x29ef547d0>                                                                                              
+In [5]: probe_group_1.move_to([-6.6, -3.05, 0])                                                                                                      
+Out[5]: <manimlib.mobject.mobject.Group at 0x29ef547d0>                                                                                              
+In [6]: probe_group_1.move_to([-6.6, -3.05, 0])                                                                                                      
+Out[6]: <manimlib.mobject.mobject.Group at 0x29ef547d0>                                                                                              
+In [7]: probe_group_1.move_to([-6.6, -3.05, 0])                                                                                                      
+Out[7]: <manimlib.mobject.mobject.Group at 0x29ef547d0>                                                                                              
+In [8]: probe_group_1.move_to([-6.7, -3.05, 0])                                                                                                      
+Out[8]: <manimlib.mobject.mobject.Group at 0x29ef547d0>                                                                                              
+In [9]: probe_group_2.move_to([-6.1, 3.3, 0])                                                                                                        
+Out[9]: <manimlib.mobject.mobject.Group at 0x29ee698d0>                                                                                              
+In [10]: probe_group_2.move_to([-6.4, 3.3, 0])                                                                                                       
+Out[10]: <manimlib.mobject.mobject.Group at 0x29ee698d0>                                                                                             
+In [11]: probe_group_2.move_to([-6.6, 3.3, 0])                                                                                                       
+Out[11]: <manimlib.mobject.mobject.Group at 0x29ee698d0>                                                                                             
+                                                                                                                                                     
+In [12]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 476                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: checkpoint_paste() # (20 lines)                                                                                                              
+---------------------------------------------------------------------------                                                                          
+IndexError                                Traceback (most recent call last)                                                                          
+Cell In[1], line 19                                                                                                                                  
+      3 self.play(                                                                                                                                   
+      4     FadeIn(all_svgs[8][-105:]),                                                                                                              
+      5     FadeIn(all_svgs[9][-14:]),                                             
+   (...)                                                                           
+     16     FadeIn(all_svgs[22][4:6]),                                        
+     17     run_time=6)                                                                                                                              
+     18 self.add(all_svgs[21])                                                     
+---> 19 self.play(Write(all_svgs[26])) #Little yellow arrow bro                      
+        self = <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 object at 0x16a4bd090>
+        all_svgs = <manimlib.mobject.mobject.Group object at 0x16d938390>                                                                            
+     20 self.wait()                                                 
+                                                                           
+File ~/manim/manimlib/mobject/mobject.py:2193, in Group.__getitem__(self=<manimlib.mobject.mobject.Group object>, index=26)
+   2192 def __getitem__(self, index) -> SubmobjectType:        
+-> 2193     return super().__getitem__(index)                                                
+        index = 26                                                       
+                                                                 
+File ~/manim/manimlib/mobject/mobject.py:405, in Mobject.__getitem__(self=<manimlib.mobject.mobject.Group object>, value=26)                         
+    403     GroupClass = self.get_group_class()             
+    404     return GroupClass(*self.split().__getitem__(value))                                                                                      
+--> 405 return self.split().__getitem__(value)
+        value = 26
+        self = <manimlib.mobject.mobject.Group object at 0x16d938390>
+
+IndexError: list index out of range
+In [2]: self.play(Write(all_svgs[24])) #Little yellow arrow bro                                                                                      
+Out[2]: <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 at 0x16a4bd090>                                                                    
+In [3]: self.play(Write(all_svgs[26])) #Little yellow arrow bro                                                                                      
+---------------------------------------------------------------------------                                                                          
+IndexError                                Traceback (most recent call last)                                                                          
+Cell In[3], line 1                                                                                                                                   
+----> 1 self.play(Write(all_svgs[26]))                                               
+        self = <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 object at 0x16a4bd090>
+        all_svgs = <manimlib.mobject.mobject.Group object at 0x16d938390>                                                                            
+                                                                    
+File ~/manim/manimlib/mobject/mobject.py:2193, in Group.__getitem__(self=<manimlib.mobject.mobject.Group object>, index=26)
+   2192 def __getitem__(self, index) -> SubmobjectType:                                                                    
+-> 2193     return super().__getitem__(index)                  
+        index = 26                                                                           
+                                                                         
+File ~/manim/manimlib/mobject/mobject.py:405, in Mobject.__getitem__(self=<manimlib.mobject.mobject.Group object>, value=26)
+    403     GroupClass = self.get_group_class()                                                                                                      
+    404     return GroupClass(*self.split().__getitem__(value))
+--> 405 return self.split().__getitem__(value)                                                                                                       
+        value = 26                            
+        self = <manimlib.mobject.mobject.Group object at 0x16d938390>
+                                                                     
+IndexError: list index out of range
+                                   
+In [4]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 495                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: wave_label_1.move_to([-7.2, 2.3, 0])                                                                                                         
+Out[1]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee1290>                                                                                        
+In [2]: wave_label_1.move_to([-7.5, 2.3, 0])                                                                                                         
+Out[2]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee1290>                                                                                        
+In [3]: wave_label_2.move_to([-5.2, 2.3, 0])                                                                                                         
+Out[3]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee8310>                                                                                        
+In [4]: wave_label_4.move_to([-5.1, -4.1, 0])                                                                                                        
+Out[4]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cf59810>                                                                                        
+In [5]: wave_label_1.move_to([-7.5, 2.3, 0])                                                                                                         
+Out[5]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee1290>                                                                                        
+In [6]: wave_label_2.move_to([-5.2, 2.3, 0])                                                                                                         
+Out[6]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee8310>                                                                                        
+In [7]: wave_label_2.move_to([-5.3, 2.3, 0])                                                                                                         
+Out[7]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee8310>                                                                                        
+In [8]: wave_label_1.move_to([-7.7, 2.3, 0])                                                                                                         
+Out[8]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee1290>                                                                                        
+In [9]: wave_label_2.move_to([-5.5, 2.3, 0])                                                                                                         
+Out[9]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee8310>                                                                                        
+In [10]: wave_label_2.move_to([-5.6, 2.3, 0])                                                                                                        
+Out[10]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee8310>                                                                                       
+In [11]: wave_label_1.move_to([-7.8, 2.3, 0])                                                                                                        
+Out[11]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee1290>                                                                                       
+In [12]: wave_label_2.move_to([-5.7, 2.3, 0])                                                                                                        
+Out[12]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee8310>                                                                                       
+In [13]: wave_label_1.move_to([-7.8, 2.3, 0])                                                                                                        
+Out[13]: <manimlib.mobject.svg.tex_mobject.Tex at 0x29cee1290>                                                                                       
+                                                                                                                                                     
+In [14]: quit                                                                                                                                        
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 495                                     
+ManimGL v1.7.2                                                                                                                                       
+In [1]: self.add(all_svgs[9])                                                                                                                        
+In [2]: self.add(remove[9]); self.add(all_svgs[9])                                                                                                   
+---------------------------------------------------------------------------                                                                          
+TypeError                                 Traceback (most recent call last)                                                                          
+Cell In[2], line 1                                                                                                                                   
+----> 1 self.add(remove[9]); self.add(all_svgs[9])                                                                                                   
+        self = <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 object at 0x165dd7890>                                                      
+        all_svgs = <manimlib.mobject.mobject.Group object at 0x166fb2f50>
+                                                                                                                           
+TypeError: 'method' object is not subscriptable                                                                            
+In [3]: self.remove(all_svgs[9]); self.add(all_svgs[9])                                                                                              
+                                                                                                                                                     
+In [4]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % manimgl /Users/stephen/manim/videos/_2025/grokking/p41_58.py P44_49 -se 493                                     
+ManimGL v1.7.2                                                                                                                                       
+^Lself.remove(all_svgs[9]); self.add(all_svgs[9])                                                                                                    
+In [1]: self.remove(all_svgs[9]); self.add(all_svgs[9])                                                                                              
+In [2]: self.remove(all_svgs[9]); self.add(all_svgs[9])                                                                                              
+In [3]: self.remove(all_svgs[22][:2]); self.add(all_svgs[22][:2])                                                                                    
+In [4]: self.play(Write(all_svgs[26])) #Little yellow arrow bro                                                                                      
+Out[4]: <.Users.stephen.manim.videos._2025.grokking.p41_58.P44_49 at 0x14e6a8c50>                                                                    
+                                                                                                                                                     
+In [5]: quit                                                                                                                                         
+^L                                                                                                                                                   
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos %                                                                                                                 
+(base) stephen@Stephens-MBP videos % mlp_out=np.load(data_dir/'hook_mlp_out.npy')                                                                    
+(base) stephen@Stephens-MBP videos % 

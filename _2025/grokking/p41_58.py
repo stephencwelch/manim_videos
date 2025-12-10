@@ -486,20 +486,27 @@ class P44_49(InteractiveScene):
             probe_group_2.animate.move_to([-6.7, 3.3, 0]),
             wave_label_2.animate.scale(1.2).move_to([-5.7, 2.3, 0]),
             wave_label_1.animate.scale(1.2).move_to([-7.8, 2.3, 0]),
-            self.frame.animate.reorient(0, 0, 0, (1.65, 0.11, 0.2), 12.32),
+            self.frame.animate.reorient(0, 0, 0, (1.46, 0.11, 0.2), 12.32),
             FadeIn(all_svgs[22][:2]), 
             FadeIn(all_svgs[22][4:6]),
             run_time=6)
         self.add(all_svgs[21])
+        self.remove(all_svgs[9]); self.add(all_svgs[9])
+        self.remove(all_svgs[22][:2]); self.add(all_svgs[22][:2])
+
+        self.wait()
         self.play(Write(all_svgs[26])) #Little yellow arrow bro
         self.wait()
+
+
+
 
 
 
         # probe_group_2.move_to([-6.6, 3.3, 0])
 
         # self.add(all_svgs[8])
-        # self.add(all_svgs[9])
+        
         # self.add(all_svgs[14][:9])
         # self.add(all_svgs[14][10:])
 
@@ -542,6 +549,55 @@ class P44_49(InteractiveScene):
         self.wait(20)
         self.embed()
 
+
+class P49_3D(InteractiveScene):
+    def construct(self): 
+        p=113
+
+        mlp_our=np.load(data_dir/'hook_mlp_out.npy')
+
+        axes_1 = ThreeDAxes(
+            x_range=[0, p, 10],
+            y_range=[0, p, 10],
+            z_range=[-1, 1, 1],
+            width=4,
+            height=4,
+            depth=1.4,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2,
+                "tip_config": {"width":0.05, "length":0.05}
+                }
+        )
+
+        x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
+        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
+        axes_1_group=VGroup(axes_1, x_label, y_label)
+        x_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [0, 0, 1])
+        axes_1[0].rotate(DEGREES*90, [1, 0, 0])
+        axes_1[1].rotate(DEGREES*90, [0, 1, 0])
+
+        # Ok trying to pick a good neuron here -> I want a very pronounced peak. 
+        # Hmm so an important thing coming up shortly here is showing the interference
+        # between my two mid layer neurons
+        # There's a few ways I can do this
+        # Could just show the strongest components, or show the full thing
+        # But yeah that's a factor as well for picking a good final neuron for sure. 
+        # Reading the script, maybe these are not quite as coupled as I was worried they were?
+        # Ok looks like 11 is nice. 
+
+
+
+
+
+
+        self.wait(20)
+        self.embed()
 
 
 class P45_3D(InteractiveScene):
