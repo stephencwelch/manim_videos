@@ -612,13 +612,19 @@ class P52_54_3D(InteractiveScene):
         ts = TexturedSurface(surface, str(data_dir/('activations_'+str(neuron_idx_1).zfill(3)+'.png')))
         ts.set_shading(0.0, 0.1, 0)
         ts.set_opacity(0.8)
-        axes_1_group=Group(axes_1[:2], x_label, y_label, ts)
+        
+        surf_1_component_eq=lambda i, j: 0.354 * np.cos(2*np.pi*((4*i)/113) - 0.516) * np.cos(2*np.pi*((4*j)/113) - 0.516)
+        surf_1_component = ParametricSurface(
+            make_fourier_surf_func(axes_1, surf_1_component_eq),
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+        surf_1_component.set_color(ORANGE).set_shading(0.1, 0.5, 0.5)
+        axes_1_group=Group(axes_1[:2], x_label, y_label, ts, surf_1_component)
 
 
         #Ok now let's add the sin-sin surface. 
-
-
-
         neuron_idx_2= 331 #106 #343 #192
         nueron_2_mean=np.mean(mlp_hook_pre[:,:,2,neuron_idx_2])
 
@@ -639,8 +645,16 @@ class P52_54_3D(InteractiveScene):
         ts2 = TexturedSurface(surface_2, str(data_dir/('activations_'+str(neuron_idx_2).zfill(3)+'.png')))
         ts2.set_shading(0.0, 0.1, 0)
 
+        surf_2_component_eq=lambda i, j: 0.155 * np.cos(2*np.pi*((4*i)/113) + 3.04) * np.cos(2*np.pi*((4*j)/113) + 3.04)
+        surf_2_component = ParametricSurface(
+            make_fourier_surf_func(axes_2, surf_2_component_eq),
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+        surf_2_component.set_color(CYAN).set_shading(0.1, 0.5, 0.5) 
 
-        axes_2_group=Group(axes_2[:2], x_label_2, y_label_2, ts2)
+        axes_2_group=Group(axes_2[:2], x_label_2, y_label_2, ts2, surf_2_component)
         axes_2_group.move_to([0, 0, -15])
     
 
@@ -650,7 +664,7 @@ class P52_54_3D(InteractiveScene):
         # self.frame.reorient(134, 42, 0, (1.31, 1.43, -2.65), 11.48) #Where P45 scene below ends right now. 
         self.frame.reorient(135, 42, 0, (1.62, 1.74, -3.08), 12.34)
 
-        self.add(axes_1_group)
+        self.add(axes_1_group[:4])
         self.wait()
 
         self.play(ShowCreation(axes_2_group[:3]), run_time=4)
@@ -662,25 +676,27 @@ class P52_54_3D(InteractiveScene):
         #Ok first thing to do will be to bring over the strongest frequency component of the top surface
         #Probably stick with orange, then do the same thing for the bottom surface
 
-        surf_1_component_eq=lambda i, j: 0.354 * np.cos(2*np.pi*((4*i)/113) - 0.516) * np.cos(2*np.pi*((4*j)/113) - 0.516)
-        surf_1_component = ParametricSurface(
-            make_fourier_surf_func(axes_1, surf_1_component_eq),
-            u_range=[0, 1.0],
-            v_range=[0, 1.0],
-            resolution=(resolution, resolution),
-        )
-        surf_1_component.set_color(ORANGE).set_shading(0.1, 0.5, 0.5)
+
 
         self.wait()
         self.add(surf_1_component)
         self.play(surf_1_component.animate.move_to([-4.6, 4.6, 0]).rotate(5*DEGREES, [1, -1, 0]).rotate(3*DEGREES, [1, 1, 0]), 
                  run_time=3)
-
         # surf_1_component.rotate(5*DEGREES, [1, -1, 0])
         # surf_1_component.rotate(3*DEGREES, [1, 1, 0])
         self.wait()
 
+        # Ok good soptting point here I think -> I don't think that 331 is the best eneuron here
+        # That sin sin compenent doesn't match that well. 
+        # Let me look at other options then come back. 
 
+
+        self.wait()
+        self.add(surf_2_component)
+        self.play(surf_2_component.animate.move_to([-4.6, 4.6, -5]), #.rotate(5*DEGREES, [1, -1, 0]).rotate(3*DEGREES, [1, 1, 0]), 
+                 run_time=3)
+        # surf_1_component.rotate(5*DEGREES, [1, -1, 0])
+        # surf_1_component.rotate(3*DEGREES, [1, 1, 0])
 
 
 
