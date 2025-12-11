@@ -244,7 +244,7 @@ def make_fourier_surf_func(axes, comp_func):
     return func
 
 
-class P44_49(InteractiveScene):
+class P44_51(InteractiveScene):
     def construct(self): 
         '''
         Big 2d scene, building up to most zoomed out view. 
@@ -498,47 +498,20 @@ class P44_49(InteractiveScene):
         self.play(Write(all_svgs[26])) #Little yellow arrow bro
         self.wait()
 
+        # Ok p51 now. I imagine I'll probably "slide" the 2d network over in illustrator
+        # and drop the opacity for p49. 
+        # Now, I think for the manim part of this transition i Just need to swap the arrow? 
+        # Although actually we probably don't want to swap it until I bring back in the rest of the network. 
+        # Yeah that tracks. 
+        # Ok so big thing now then is actually setting up to "blend the component to show the cancellation"
+        # That will be interseting. 
 
+        #Ok so I think it's actually add the bottom arrow? I think that's the next hting
 
+        #Bing in arrow pointing to sin/sin surface
+        self.play(Write(all_svgs[22][2]), Write(all_svgs[22][6:]), run_time=3)
+        self.wait()
 
-
-
-        # probe_group_2.move_to([-6.6, 3.3, 0])
-
-        # self.add(all_svgs[8])
-        
-        # self.add(all_svgs[14][:9])
-        # self.add(all_svgs[14][10:])
-
-
-        # # self.add(mid_mlp_fade_group) 
-
-        # probe_group_1.move_to([-6.1, -3.05, 0])
-        # wave_label_3.scale(1.2)
-        # wave_label_4.scale(1.2)
-        # wave_label_3.move_to([-7.3, -4.1, 0])
-        # wave_label_4.move_to([-5.1, -4.1, 0])
-
-        # probe_group_2.move_to([-6.1, 3.3, 0])
-        # wave_label_1.scale(1.2)
-        # wave_label_2.scale(1.2)
-
-        # wave_label_1.move_to([-7.8, 2.3, 0])
-        # wave_label_2.move_to([-5.7, 2.3, 0])
-
-
-        # # self.frame.reorient(0, 0, 0, (0.03, 0.17, 0.2), 12.02)
-        # self.frame.reorient(0, 0, 0, (1.57, 0.09, 0.2), 12.02)
-        # self.remove(all_svgs[18])
-        # self.add(all_svgs[21])
-
-
-        # self.add(all_svgs[22][:2])
-        # self.add(all_svgs[22][4:6])
-
-        # self.remove(all_svgs[22])
-
-        #Next -> get probe groups into good locations. 
 
         self.wait()
 
@@ -550,11 +523,176 @@ class P44_49(InteractiveScene):
         self.embed()
 
 
-class P49_3D(InteractiveScene):
+class P52_54_3D(InteractiveScene):
+    def construct(self): 
+
+        # Kinda digging the idea of "bringing the strongest components from each "over to the side"
+        # what we we get a nice vertical sum and a nice way to show the addition. 
+        # So this scene will start with the two mid layer surfaces, 
+        # then "extract the strongest terms" over to the right
+        # And maybe equations in both place? We'll see about equations, definitely want them on the 
+        # right for clear addition
+        # Then invert the surface, and show cool cancelletation, let's go. 
+        # Then show math
+
+        mlp_hook_pre=np.load(data_dir/'mlp_hook_pre.npy')
+
+        p=113
+
+        axes_1 = ThreeDAxes(
+            x_range=[0, p, 10],
+            y_range=[0, p, 10],
+            z_range=[-1, 1, 1],
+            width=4,
+            height=4,
+            depth=1.4,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2,
+                "tip_config": {"width":0.05, "length":0.05}
+                }
+        )
+
+        axes_2 = ThreeDAxes(
+            x_range=[0, p, 10],
+            y_range=[0, p, 10],
+            z_range=[-1, 1, 1],
+            width=4,
+            height=4,
+            depth=1.4,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2,
+                "tip_config": {"width":0.05, "length":0.05}
+                }
+        )
+
+        #May want to rotate these labels, we'll see. 
+        x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
+        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
+        x_label.rotate(DEGREES*90, [1, 0, 0])
+        x_label.rotate(DEGREES*180, [0, 0, 1])
+        y_label.rotate(DEGREES*90, [0, 0, 1])
+        y_label.rotate(DEGREES*90, [0, 1, 0])
+        axes_1[0].rotate(DEGREES*90, [1, 0, 0])
+        axes_1[1].rotate(DEGREES*90, [0, 1, 0])
+
+        x_label_2 = Tex("x", font_size=32).next_to(axes_2.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
+        y_label_2 = Tex("y", font_size=32).next_to(axes_2.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
+        x_label_2.rotate(DEGREES*90, [1, 0, 0])
+        x_label_2.rotate(DEGREES*180, [0, 0, 1])
+        y_label_2.rotate(DEGREES*90, [0, 0, 1])
+        y_label_2.rotate(DEGREES*90, [0, 1, 0])
+        axes_2[0].rotate(DEGREES*90, [1, 0, 0])
+        axes_2[1].rotate(DEGREES*90, [0, 1, 0])
+
+        neuron_idx_1=106
+        neuron_1_mean=np.mean(mlp_hook_pre[:,:,2, neuron_idx_1])-0.20 #Eh?
+
+        surf_func_with_axes = partial(
+            surf_func, 
+            axes=axes_1,
+            surf_array=mlp_hook_pre[:,:,2,neuron_idx_1]-neuron_1_mean, 
+            scale=1.0
+        )
+
+        surface = ParametricSurface(
+            surf_func_with_axes,  
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+
+        ts = TexturedSurface(surface, str(data_dir/('activations_'+str(neuron_idx_1).zfill(3)+'.png')))
+        ts.set_shading(0.0, 0.1, 0)
+        ts.set_opacity(0.8)
+        axes_1_group=Group(axes_1[:2], x_label, y_label, ts)
+
+
+        #Ok now let's add the sin-sin surface. 
+
+
+
+        neuron_idx_2= 331 #106 #343 #192
+        nueron_2_mean=np.mean(mlp_hook_pre[:,:,2,neuron_idx_2])
+
+        surf_func_with_axes = partial(
+            surf_func, 
+            axes=axes_2,
+            surf_array=mlp_hook_pre[:,:,2,neuron_idx_2]-nueron_2_mean, 
+            scale=1.0
+        )
+
+        surface_2 = ParametricSurface(
+            surf_func_with_axes,  
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+
+        ts2 = TexturedSurface(surface_2, str(data_dir/('activations_'+str(neuron_idx_2).zfill(3)+'.png')))
+        ts2.set_shading(0.0, 0.1, 0)
+
+
+        axes_2_group=Group(axes_2[:2], x_label_2, y_label_2, ts2)
+        axes_2_group.move_to([0, 0, -15])
+    
+
+        axes_2_group.rotate(25*DEGREES, [1, -1, 0]) #Tilt up and scale to compensate for FOV
+        axes_2_group.scale(1.8)
+
+        # self.frame.reorient(134, 42, 0, (1.31, 1.43, -2.65), 11.48) #Where P45 scene below ends right now. 
+        self.frame.reorient(135, 42, 0, (1.62, 1.74, -3.08), 12.34)
+
+        self.add(axes_1_group)
+        self.wait()
+
+        self.play(ShowCreation(axes_2_group[:3]), run_time=4)
+        self.play(ShowCreation(axes_2_group[3]), run_time=4)  
+
+        self.wait()
+        #Ok I think this staring FOV and arangemetn will work. 
+
+        #Ok first thing to do will be to bring over the strongest frequency component of the top surface
+        #Probably stick with orange, then do the same thing for the bottom surface
+
+        surf_1_component_eq=lambda i, j: 0.354 * np.cos(2*np.pi*((4*i)/113) - 0.516) * np.cos(2*np.pi*((4*j)/113) - 0.516)
+        surf_1_component = ParametricSurface(
+            make_fourier_surf_func(axes_1, surf_1_component_eq),
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+        surf_1_component.set_color(ORANGE).set_shading(0.1, 0.5, 0.5)
+
+        self.wait()
+        self.add(surf_1_component)
+        self.play(surf_1_component.animate.move_to([-4.6, 4.6, 0]).rotate(5*DEGREES, [1, -1, 0]).rotate(3*DEGREES, [1, 1, 0]), 
+                 run_time=3)
+
+        # surf_1_component.rotate(5*DEGREES, [1, -1, 0])
+        # surf_1_component.rotate(3*DEGREES, [1, 1, 0])
+        self.wait()
+
+
+
+
+
+        self.wait(20)
+        self.embed()
+
+
+class P49_51_3D(InteractiveScene):
     def construct(self): 
         p=113
 
-        mlp_our=np.load(data_dir/'hook_mlp_out.npy')
+        mlp_out=np.load(data_dir/'hook_mlp_out.npy')
 
         axes_1 = ThreeDAxes(
             x_range=[0, p, 10],
@@ -591,9 +729,123 @@ class P49_3D(InteractiveScene):
         # Reading the script, maybe these are not quite as coupled as I was worried they were?
         # Ok looks like 11 is nice. 
 
+        neuron_idx_1 = 1
+        neuron_1_mean=np.mean(mlp_out[:,:,2,neuron_idx_1])
+        neuron_1_max=np.max(np.abs(mlp_out[:,:,2,neuron_idx_1]-neuron_1_mean))
+
+        surf_func_with_axes = partial(
+            surf_func, 
+            axes=axes_1,
+            surf_array=0.75*(mlp_out[:,:,2,neuron_idx_1]-neuron_1_mean)/neuron_1_max, 
+            scale=1.0
+        )
+
+        surface = ParametricSurface(
+            surf_func_with_axes,  
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+
+        ts = TexturedSurface(surface, str(data_dir/('activations_post_'+str(neuron_idx_1).zfill(3)+'.png')))
+        ts.set_shading(0.0, 0.1, 0)
+        ts.set_opacity(0.8)
+
+
+        
+        self.frame.reorient(51, 71, 0, (-0.8, -0.78, -0.3), 7.20)
+
+        self.wait()
+        self.play(ShowCreation(axes_1), ShowCreation(x_label), ShowCreation(y_label), run_time=5)
+        self.wait()
+
+
+        self.play(ShowCreation(ts), 
+                 self.frame.animate.reorient(44, 53, 0, (-0.55, -0.54, -0.39), 7.20), 
+                 run_time=5)
+        self.wait()
+
+
+        #Let's consider these two top crests where the outputs 
+
+        self.play(self.frame.animate.reorient(47, 84, 0, (-0.55, -0.54, -0.39), 7.20), run_time=3)
+        self.wait() #Add arrows to top crests in illustrator
 
 
 
+
+        # Ok I'm feeling an overhead view and flateen thing here -> let's see what I can figure out. 
+        # AI Assistant, can you create an animation that morphs ts into a flat surface while moving to an overhead view like this:
+        # reorient(89, 0, 0, (0.11, -0.08, -0.33), 6.42)
+        # Create a flat version of the surface function
+        def flat_surf_func(u, v, axes):
+            x = u * 113
+            y = v * 113
+            z = 0  # Flat at z=0
+            return axes.c2p(x, y, z)
+
+        flat_surf_func_with_axes = partial(flat_surf_func, axes=axes_1)
+
+        # Create the flat surface with the same texture
+        flat_surface = ParametricSurface(
+            flat_surf_func_with_axes,
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+
+        flat_ts = TexturedSurface(flat_surface, str(data_dir/('activations_post_'+str(neuron_idx_1).zfill(3)+'.png')))
+        flat_ts.set_shading(0.0, 0.1, 0)
+        flat_ts.set_opacity(0.8)
+
+        # Animate: morph surface flat + move camera overhead
+        self.wait()
+        self.play(
+            ReplacementTransform(ts, flat_ts),
+            FadeOut(axes_1[2]),
+            y_label.animate.rotate(-90*DEGREES, [0, 1, 0]),
+            x_label.animate.rotate(-90*DEGREES, [1, -0, 0]).rotate(90*DEGREES, [0, 0, 1]),
+            self.frame.animate.reorient(90, 0, 0, (-0.03, -0.11, -0.33), 5.73),
+            run_time=9
+        )
+
+        #Make ts2 a little flatter
+        surf_func_with_axes = partial(
+            surf_func, 
+            axes=axes_1,
+            surf_array=0.5*(mlp_out[:,:,2,neuron_idx_1]-neuron_1_mean)/neuron_1_max, 
+            scale=1.0
+        )
+
+        surface = ParametricSurface(
+            surf_func_with_axes,  
+            u_range=[0, 1.0],
+            v_range=[0, 1.0],
+            resolution=(resolution, resolution),
+        )
+
+        ts2 = TexturedSurface(surface, str(data_dir/('activations_post_'+str(neuron_idx_1).zfill(3)+'.png')))
+        ts2.set_shading(0.0, 0.1, 0)
+        ts2.set_opacity(0.8)
+
+        # self.frame.reorient(90, 0, 0, (-0.03, -0.11, -0.33), 5.73)
+        # x_label.rotate(90*DEGREES, [0, 0, 1])
+
+        #Ok now we have the big p51 "zoom out", so back to nice 3D angled view. 
+        #I'll also need ot move this sucker into it's final position
+        #Can try in premiere, or do in manim, try premiere first. 
+        self.wait()
+        self.play(ReplacementTransform(flat_ts, ts2), 
+                 FadeIn(axes_1[2]),
+                 y_label.animate.rotate(90*DEGREES, [0, 1, 0]),
+                 x_label.animate.rotate(90*DEGREES, [0, 0, 1]).rotate(90*DEGREES, [1, 0, 0]),
+                 self.frame.animate.reorient(42, 52, 0, (-0.02, -0.06, -0.46), 7.20), 
+                 run_time=6)
+        self.wait()
+
+        # Ok I think it's going to make sense to keep rolling here for visual continuity?
+        # Well actually, we're going to replace everythign I think? 
+        # Ok yeah let's try a new scene here. 
 
 
         self.wait(20)
@@ -1304,6 +1556,7 @@ class P41_43(InteractiveScene):
         # self.add(dots_curve_5, dots_curve_6)
 
         #Ok cool now we cut to the clock again. Probably a good spot to start a new scene. 
+
 
 
         self.wait(20)
