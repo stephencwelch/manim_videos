@@ -246,11 +246,11 @@ def make_fourier_surf_func(axes, comp_func):
 
 class P59_mlp_surface_1(InteractiveScene):
     def construct(self): 
-
-        ckpt_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
+        p=113
         neuron_idx=341
 
-        mlp_pre=np.load(data_dir/('training_mlp_pre_'+str(neuron_idx)+'.npy'))
+        ckpt_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
+        mlp_pre=np.load(data_dir/('training_mlp_pre'+str(neuron_idx)+'.npy'))
 
         axes_1 = ThreeDAxes(
             x_range=[0, p, 10],
@@ -271,7 +271,7 @@ class P59_mlp_surface_1(InteractiveScene):
 
         x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
         y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
-        axes_1_group=VGroup(axes_1, x_label, y_label)
+        axes_1_group=VGroup(axes_1[:2], x_label, y_label)
         x_label.rotate(DEGREES*90, [1, 0, 0])
         y_label.rotate(DEGREES*90, [1, 0, 0])
         y_label.rotate(DEGREES*90, [0, 0, 1])
@@ -279,8 +279,11 @@ class P59_mlp_surface_1(InteractiveScene):
         axes_1[1].rotate(DEGREES*90, [0, 1, 0])
 
 
-        self.frame.reorient(43, 57, 0, (-0.15, -0.07, -0.33), 6.60)
-        self.add(axes_1_group)
+        # self.frame.reorient(43, 57, 0, (-0.15, -0.07, -0.33), 6.60)
+        # self.frame.reorient(43, 42, 0, (0.07, -0.2, -0.58), 6.21)
+        # self.frame.reorient(45, 45, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.frame.reorient(45, 44, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.add(axes_1[:2]) #Leaving out x and y for now. 
 
         for time_step in range(1000):
             neuron_1_mean=np.mean(mlp_pre[time_step, :, :])
@@ -300,7 +303,7 @@ class P59_mlp_surface_1(InteractiveScene):
                 resolution=(resolution, resolution),
             )
 
-            ts = TexturedSurface(surface, str(data_dir/'training_heatmaps'/('mlp_pre_'+str(train_step).zfill(4)+'_'+str(neuron_idx).zfill(3)+'.png')))
+            ts = TexturedSurface(surface, str(data_dir/'training_heatmaps'/('mlp_pre_'+str(10*time_step).zfill(4)+'_'+str(neuron_idx).zfill(3)+'.png')))
             ts.set_shading(0.0, 0.1, 0)
             ts.set_opacity(0.8)
 
@@ -309,14 +312,225 @@ class P59_mlp_surface_1(InteractiveScene):
             self.remove(ts)
 
 
+        self.wait(20)
+        self.embed()
+
+
+class P59_mlp_surface_2(InteractiveScene):
+    def construct(self): 
+        p=113
+        neuron_idx=106
+
+        ckpt_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
+        mlp_pre=np.load(data_dir/('training_mlp_pre'+str(neuron_idx)+'.npy'))
+
+        axes_1 = ThreeDAxes(
+            x_range=[0, p, 10],
+            y_range=[0, p, 10],
+            z_range=[-1, 1, 1],
+            width=4,
+            height=4,
+            depth=1.4,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2,
+                "tip_config": {"width":0.05, "length":0.05}
+                }
+        )
+
+        x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
+        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
+        axes_1_group=VGroup(axes_1[:2], x_label, y_label)
+        x_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [0, 0, 1])
+        axes_1[0].rotate(DEGREES*90, [1, 0, 0])
+        axes_1[1].rotate(DEGREES*90, [0, 1, 0])
+
+
+        # self.frame.reorient(43, 57, 0, (-0.15, -0.07, -0.33), 6.60)
+        # self.frame.reorient(43, 42, 0, (0.07, -0.2, -0.58), 6.21)
+        # self.frame.reorient(45, 45, 0, (-0.07, -0.17, -0.49), 6.21)
+        # self.frame.reorient(45, 44, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.frame.reorient(49, 47, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.add(axes_1[:2]) #Leaving out x and y for now. 
+
+        for time_step in range(1000):
+            neuron_1_mean=np.mean(mlp_pre[time_step, :, :])
+            neuron_1_max=np.max(np.abs(mlp_pre[time_step, :, :]-neuron_1_mean))
+
+            surf_func_with_axes = partial(
+                surf_func, 
+                axes=axes_1,
+                surf_array=(mlp_pre[time_step, :, :]-neuron_1_mean)/neuron_1_max, 
+                scale=1.0
+            )
+
+            surface = ParametricSurface(
+                surf_func_with_axes,  
+                u_range=[0, 1.0],
+                v_range=[0, 1.0],
+                resolution=(resolution, resolution),
+            )
+
+            ts = TexturedSurface(surface, str(data_dir/'training_heatmaps'/('mlp_pre_'+str(10*time_step).zfill(4)+'_'+str(neuron_idx).zfill(3)+'.png')))
+            ts.set_shading(0.0, 0.1, 0)
+            ts.set_opacity(0.8)
+
+            self.add(ts)
+            self.wait(0.1)
+            self.remove(ts)
+
+
+        self.wait(20)
+        self.embed()
+
+class P59_mlp_surface_3(InteractiveScene):
+    def construct(self): 
+        p=113
+        neuron_idx=1
+
+        ckpt_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
+        mlp_pre=np.load(data_dir/('training_mlp_out'+str(neuron_idx).zfill(3)+'.npy'))
+
+        axes_1 = ThreeDAxes(
+            x_range=[0, p, 10],
+            y_range=[0, p, 10],
+            z_range=[-1, 1, 1],
+            width=4,
+            height=4,
+            depth=1.4,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2,
+                "tip_config": {"width":0.05, "length":0.05}
+                }
+        )
+
+        x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
+        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
+        axes_1_group=VGroup(axes_1[:2], x_label, y_label)
+        x_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [0, 0, 1])
+        axes_1[0].rotate(DEGREES*90, [1, 0, 0])
+        axes_1[1].rotate(DEGREES*90, [0, 1, 0])
+
+
+        # self.frame.reorient(43, 57, 0, (-0.15, -0.07, -0.33), 6.60)
+        # self.frame.reorient(43, 42, 0, (0.07, -0.2, -0.58), 6.21)
+        # self.frame.reorient(45, 45, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.frame.reorient(45, 44, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.add(axes_1[:2]) #Leaving out x and y for now. 
+
+        for time_step in range(1000):
+            neuron_1_mean=np.mean(mlp_pre[time_step, :, :])
+            neuron_1_max=np.max(np.abs(mlp_pre[time_step, :, :]-neuron_1_mean))
+
+            surf_func_with_axes = partial(
+                surf_func, 
+                axes=axes_1,
+                surf_array=(mlp_pre[time_step, :, :]-neuron_1_mean)/neuron_1_max, 
+                scale=1.0
+            )
+
+            surface = ParametricSurface(
+                surf_func_with_axes,  
+                u_range=[0, 1.0],
+                v_range=[0, 1.0],
+                resolution=(resolution, resolution),
+            )
+
+            ts = TexturedSurface(surface, str(data_dir/'training_heatmaps'/('mlp_out_'+str(10*time_step).zfill(4)+'_'+str(neuron_idx).zfill(3)+'.png')))
+            ts.set_shading(0.0, 0.1, 0)
+            ts.set_opacity(0.8)
+
+            self.add(ts)
+            self.wait(0.1)
+            self.remove(ts)
+
 
         self.wait(20)
         self.embed()
 
 
+class P59_mlp_surface_4(InteractiveScene):
+    def construct(self): 
+        p=113
+        neuron_idx=7
+
+        ckpt_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/grokking/from_linux/grok_1764706121')
+        mlp_pre=np.load(data_dir/('logits'+str(neuron_idx).zfill(3)+'.npy'))
+
+        axes_1 = ThreeDAxes(
+            x_range=[0, p, 10],
+            y_range=[0, p, 10],
+            z_range=[-1, 1, 1],
+            width=4,
+            height=4,
+            depth=1.4,
+            axis_config={
+                "color": CHILL_BROWN,
+                "include_ticks": False,
+                "include_numbers": False,
+                "include_tip": True,
+                "stroke_width":2,
+                "tip_config": {"width":0.05, "length":0.05}
+                }
+        )
+
+        x_label = Tex("x", font_size=32).next_to(axes_1.x_axis.get_end(), RIGHT, buff=0.1).set_color(CHILL_BROWN)
+        y_label = Tex("y", font_size=32).next_to(axes_1.y_axis.get_end(), UP, buff=0.1).set_color(CHILL_BROWN)
+        axes_1_group=VGroup(axes_1[:2], x_label, y_label)
+        x_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [1, 0, 0])
+        y_label.rotate(DEGREES*90, [0, 0, 1])
+        axes_1[0].rotate(DEGREES*90, [1, 0, 0])
+        axes_1[1].rotate(DEGREES*90, [0, 1, 0])
 
 
+        # self.frame.reorient(43, 57, 0, (-0.15, -0.07, -0.33), 6.60)
+        # self.frame.reorient(43, 42, 0, (0.07, -0.2, -0.58), 6.21)
+        # self.frame.reorient(45, 45, 0, (-0.07, -0.17, -0.49), 6.21)
+        # self.frame.reorient(45, 44, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.frame.reorient(49, 47, 0, (-0.07, -0.17, -0.49), 6.21)
+        self.add(axes_1[:2]) #Leaving out x and y for now. 
 
+        for time_step in range(1000):
+            neuron_1_mean=np.mean(mlp_pre[time_step, :, :])
+            neuron_1_max=np.max(np.abs(mlp_pre[time_step, :, :]-neuron_1_mean))
+
+            surf_func_with_axes = partial(
+                surf_func, 
+                axes=axes_1,
+                surf_array=(mlp_pre[time_step, :, :]-neuron_1_mean)/neuron_1_max, 
+                scale=1.0
+            )
+
+            surface = ParametricSurface(
+                surf_func_with_axes,  
+                u_range=[0, 1.0],
+                v_range=[0, 1.0],
+                resolution=(resolution, resolution),
+            )
+
+            ts = TexturedSurface(surface, str(data_dir/'training_heatmaps'/('logits_'+str(10*time_step).zfill(4)+'_'+str(neuron_idx).zfill(3)+'.png')))
+            ts.set_shading(0.0, 0.1, 0)
+            ts.set_opacity(0.8)
+
+            self.add(ts)
+            self.wait(0.1)
+            self.remove(ts)
+
+
+        self.wait(20)
+        self.embed()
 
 
 class P59_probe_1(InteractiveScene):
