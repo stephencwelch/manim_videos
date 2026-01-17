@@ -17,18 +17,48 @@ padding = 0.5
 board_width = 8 # Total width in Manim units
 step = board_width / size
 
+# def create_stone(x, y, color=BLACK):
+#     stone_radius=step*0.45
+#     pos = [(-(size-1)/2 + x) * step, (-(size-1)/2 + y) * step, 0]
+#     stone = Circle(radius=stone_radius, fill_color=color, fill_opacity=1)
+#     stone.set_stroke(color=BLACK, width=0.5)
+    
+#     # Add a "shine" for the white stones or a "matte" highlight for black
+#     shine_color = WHITE if color == BLACK else GREY_B
+#     shine = Dot(radius=stone_radius*0.3, fill_color=shine_color, fill_opacity=0.3)
+#     shine.move_to(stone.get_center() + stone_radius*0.3*(UP+LEFT))
+    
+#     return Group(stone, shine).move_to(pos)
+
+
 def create_stone(x, y, color=BLACK):
+    """Create a 3D stone at the given grid position."""
     stone_radius=step*0.45
     pos = [(-(size-1)/2 + x) * step, (-(size-1)/2 + y) * step, 0]
-    stone = Circle(radius=stone_radius, fill_color=color, fill_opacity=1)
-    stone.set_stroke(color=BLACK, width=0.5)
+    squash = 0.3  # How flat the stone is
     
-    # Add a "shine" for the white stones or a "matte" highlight for black
-    shine_color = WHITE if color == BLACK else GREY_B
-    shine = Dot(radius=stone_radius*0.3, fill_color=shine_color, fill_opacity=0.3)
-    shine.move_to(stone.get_center() + stone_radius*0.3*(UP+LEFT))
+    if color == BLACK:
+        stone = Sphere(radius=stone_radius)
+        # stone.set_color("#1a1a1a")
+        # stone.set_color("#222222")
+        stone.set_color(BLACK)
+        # stone.set_shading(0.3, 0.8, 0.2)  # ambient, diffuse, specular
+        stone.set_shading(0.1, 0.4, 0.1)
+    else:  # white
+        stone = Sphere(radius=stone_radius)
+        stone.set_color("#B0B0B0")
+        # stone.set_shading(0.5, 0.7, 0.3)
+        stone.set_shading(0.7, 0.9, 0.9)
+
+    # Squash in z-direction to make it stone-shaped
+    stone.scale([1, 1, squash])
     
-    return Group(stone, shine).move_to(pos)
+    # Lift it slightly so it sits on the board
+    pos[2] = stone_radius * squash
+    stone.move_to(pos)
+    
+    return stone
+
 
 class GoHackingOne(InteractiveScene):
     def construct(self): 
@@ -72,11 +102,28 @@ class GoHackingOne(InteractiveScene):
         self.add(lines)
         self.add(hoshi_dots)
 
-        black_1 = create_stone(15, 15, BLACK)
-        white_1 = create_stone(3, 3, WHITE)
+        black_1 = create_stone(14, 16, BLACK)
+        white_1 = create_stone(4, 4, WHITE)
         black_2 = create_stone(15, 3, BLACK)
+        white_2 = create_stone(15, 4, WHITE)
 
-        self.add(black_1, white_1, black_2)
+        self.add(black_1, white_1, black_2, white_2)
+
+        #Ok, not bad vidually! Next I can work on importing games. 
+        #A transition from a ncie overhead shot to this could be pretty dope. 
+
+        # black_1.set_color(BLACK)
+        # white_1.set_color('#F5F5F5')
+        # # white_1.set_color(WHITE)
+        # white_1.set_shading(0.5, 0.8, 1.0)
+
+        # white_2.set_shading(1.0,0.5,1.0)
+
+        # white_2.set_color("#B0B0B0")  # Medium gray instead of near-white
+        # white_2.set_shading(0.7, 0.9, 0.9)  # Low ambient, high diffuse, moderate specular
+        # # Try these additional methods if available:
+        # white_2.set_gloss(0.8)
+        # white_2.set_shadow(0.3)
 
 
         self.wait()
