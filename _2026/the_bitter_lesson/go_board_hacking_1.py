@@ -117,11 +117,11 @@ class GoHackingOne(InteractiveScene):
         self.add(hoshi_dots)
 
         # moves = parse_sgf(games_dir/'alpha_go_self_play/1c.sgf')
-        p=list(games_dir.glob('*.sgf'))[0]
+        p=list(games_dir.glob('*.sgf'))[1]
         moves = parse_sgf(p)
 
         self.wait()
-        for i, (x, y, color) in enumerate(moves):
+        for i, (x, y, color) in enumerate(moves[:20]):
             stone = create_stone(x, y, color)
             self.add(stone)
             # self.wait(0.1)
