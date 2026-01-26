@@ -1,4 +1,4 @@
-rom manimlib import *
+from manimlib import *
 from tqdm import tqdm
 import re
 from pathlib import Path
@@ -19,7 +19,7 @@ MAGENTA='#FF00FF'
 # games_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/games/games_with_videos')
 games_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/games/less_wrong_reverse_engineer')
 
-
+svg_dir=Path('/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/graphics/to_manim/')
 
 size = 19  # 19x19 board
 padding = 0.5
@@ -77,6 +77,102 @@ def create_stone(x, y, color=BLACK):
     
     return stone
 
+def create_cnn_layer(width=19, height=19, cell_size=0.15, depth=0.1, 
+                     fill_color=BLUE, fill_opacity=0.8, line_width=0.02):
+    """Create a single CNN layer as a flat prism with grid lines."""
+    
+    layer_w = width * cell_size
+    layer_h = height * cell_size
+    
+    # Main box
+    box = Cube(side_length=1)
+    box.set_width(layer_h, stretch=True)
+    box.set_depth(depth, stretch=True)
+    box.set_height(layer_w, stretch=True)
+    
+    grid_lines = Group()
+    
+    front_z = depth / 2 + 0.001
+    back_z = -depth / 2 - 0.001
+    
+    # Front face grid - vertical lines
+    for i in range(width + 1):
+        x = -layer_w / 2 + i * cell_size
+        line = Line3D(
+            start=np.array([x, -layer_h / 2, front_z]),
+            end=np.array([x, layer_h / 2, front_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+    
+    # Front face grid - horizontal lines
+    for j in range(height + 1):
+        y = -layer_h / 2 + j * cell_size
+        line = Line3D(
+            start=np.array([-layer_w / 2, y, front_z]),
+            end=np.array([layer_w / 2, y, front_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+    
+    # Back face grid - vertical lines
+    for i in range(width + 1):
+        x = -layer_w / 2 + i * cell_size
+        line = Line3D(
+            start=np.array([x, -layer_h / 2, back_z]),
+            end=np.array([x, layer_h / 2, back_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+    
+    # Back face grid - horizontal lines
+    for j in range(height + 1):
+        y = -layer_h / 2 + j * cell_size
+        line = Line3D(
+            start=np.array([-layer_w / 2, y, back_z]),
+            end=np.array([layer_w / 2, y, back_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+    
+    # Edge lines connecting front to back (top and bottom edges)
+    for i in range(width + 1):
+        x = -layer_w / 2 + i * cell_size
+        # Top edge
+        line = Line3D(
+            start=np.array([x, layer_h / 2, front_z]),
+            end=np.array([x, layer_h / 2, back_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+        # Bottom edge
+        line = Line3D(
+            start=np.array([x, -layer_h / 2, front_z]),
+            end=np.array([x, -layer_h / 2, back_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+    
+    # Edge lines connecting front to back (left and right edges)
+    for j in range(height + 1):
+        y = -layer_h / 2 + j * cell_size
+        # Right edge
+        line = Line3D(
+            start=np.array([layer_w / 2, y, front_z]),
+            end=np.array([layer_w / 2, y, back_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+        # Left edge
+        line = Line3D(
+            start=np.array([-layer_w / 2, y, front_z]),
+            end=np.array([-layer_w / 2, y, back_z]),
+            width=line_width, color=WHITE,
+        )
+        grid_lines.add(line)
+    
+    layer = Group(box, grid_lines)
+    return layer
 
 
 
@@ -89,8 +185,57 @@ class P29_41(InteractiveScene):
         if I need to. 
         '''
 
-        
+        # alphago_logo=SVGMobject(str(svg_dir/'alpha_go_logo.svg'))
+        alphago_logo=ImageMobject(str(svg_dir/'alpha_go_logo.png'))
+        alphago_logo.scale(0.25)
+        alphago_logo.move_to([0, 3, 0])
 
+
+        spacing=0.8
+        cnn=Group()
+        for i in range(4):
+
+            layer = create_cnn_layer(
+                width=19, 
+                height=19, 
+                cell_size=0.15, 
+                depth=0.15,
+                fill_color=CHILL_BLUE,
+            )
+
+            layer.rotate(90*DEGREES, [1, 0, 0])
+            layer[0].set_opacity(0.6)
+            layer[1].set_opacity(0.6)
+            layer.move_to([0, -spacing*i, 0])
+            cnn.add(layer)
+
+
+        self.wait()
+
+
+        #Ok this looks decent. 
+        self.add(cnn)
+        cnn.move_to([0, 0, 0])
+        cnn.rotate(90*DEGREES, axis=OUT) 
+        cnn.rotate(30*DEGREES, axis=RIGHT) 
+        cnn.rotate(-30*DEGREES, axis=UP)
+        cnn.rotate(-15*DEGREES, axis=OUT)
+
+        self.wait()
+
+        
+        # cnn.rotate(-10*DEGREES, axis=UP)
+
+
+
+        # cnn.rotate(20*DEGREES, axis=UP)
+
+        # cnn.rotate(62*DEGREES, axis=RIGHT) 
+        # cnn.rotate, axis=UP)  
+        # cnn.rotate(-59*DEGREES, axis=OUT)    
+
+
+        self.add(alphago_logo)
 
 
 
