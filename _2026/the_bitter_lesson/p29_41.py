@@ -176,6 +176,74 @@ def create_cnn_layer(width=19, height=19, cell_size=0.15, depth=0.1,
 
 
 
+def render_example_go_game_1():
+    board_rect = Square(side_length=board_width + padding)
+    board_rect.set_fill(FRESH_TAN, opacity=1)
+    board_rect.set_stroke(CHILL_BROWN, width=2)
+
+    # We center the grid so the middle intersection is at (0,0,0)
+    lines = VGroup()
+    start_point = -(size - 1) / 2 * step
+    
+    for i in range(size):
+        # Vertical lines
+        v_line = Line(
+            [start_point + i * step, start_point, 0],
+            [start_point + i * step, -start_point, 0]
+        )
+        # Horizontal lines
+        h_line = Line(
+            [start_point, start_point + i * step, 0],
+            [-start_point, start_point + i * step, 0]
+        )
+        lines.add(v_line, h_line)
+        
+    lines.set_stroke(BLACK, width=1.5)
+
+    # For a 19x19, these are usually at 4, 10, and 16 (1-indexed)
+    hoshi_indices = [3, 9, 15] # 0-indexed
+    hoshi_dots = VGroup()
+    for x in hoshi_indices:
+        for y in hoshi_indices:
+            dot = Circle(radius=0.05, fill_color=BLACK, fill_opacity=1, stroke_width=0)
+            # Position the dot based on grid coordinates
+            dot.move_to([start_point + x * step, start_point + y * step, 0])
+            hoshi_dots.add(dot)
+
+    moves=[
+        # White Stones (#FFFFFF)
+        (3, 15, '#FFFFFF'),  # Top left stone
+        (2, 4, '#FFFFFF'),   # Bottom left stone
+        # (10, 13, '#FFFFFF'), # Center cluster
+        (11, 13, '#FFFFFF'), # Center cluster
+        (10, 12, '#FFFFFF'), # Center cluster
+        (11, 12, '#FFFFFF'), # Center cluster
+        (10, 11, '#FFFFFF'), # Center cluster
+        
+        # Black Stones (#000000)
+        (11, 14, '#000000'), # Center cluster
+        (10, 13, '#000000'), # Center cluster (Overlap/Contact)
+        (12, 13, '#000000'), # Center cluster
+        (9, 12, '#000000'),  # Center cluster
+        (12, 12, '#000000'), # Center cluster
+        (11, 11, '#000000')  # Center cluster
+    ]
+
+    board=Group()
+    board.add(board_rect)
+    board.add(lines)
+    board.add(hoshi_dots)
+
+    for i, (x, y, color) in enumerate(moves):
+        stone = create_stone(x, y, color)
+        board.add(stone)
+    
+    return board
+
+
+
+
+
 class P29_41(InteractiveScene):
     def construct(self): 
         '''
@@ -188,7 +256,7 @@ class P29_41(InteractiveScene):
         # alphago_logo=SVGMobject(str(svg_dir/'alpha_go_logo.svg'))
         alphago_logo=ImageMobject(str(svg_dir/'alpha_go_logo.png'))
         alphago_logo.scale(0.25)
-        alphago_logo.move_to([0, 3, 0])
+        alphago_logo.move_to([-0.15, 3, 0])
 
 
         spacing=0.8
@@ -249,21 +317,118 @@ class P29_41(InteractiveScene):
 
         self.wait()
 
+        arrow_in = Arrow(
+            border.get_left() + LEFT * 0.85,
+            border.get_left(),
+            stroke_width=5,
+            stroke_color=CHILL_BROWN,
+            fill_color=CHILL_BROWN,
+            buff=0.2,
+        )
         
-        # cnn.rotate(-10*DEGREES, axis=UP)
+
+        arrow_out = Arrow(
+            border.get_right(),
+            border.get_right() + RIGHT * 0.85,
+            stroke_width=5,
+            stroke_color=CHILL_BROWN,
+            fill_color=CHILL_BROWN,
+            buff=0.2,
+        )
+
+        #Ok now we bring in the actualy go board renderig?
+        board_1=render_example_go_game_1()
+        board_1.scale(0.4)
+        board_1.move_to([-5, -0.3, 0])
+
+        board_2=render_example_go_game_1()
+        board_2.scale(0.4)
+        board_2.move_to([5, -0.3, 0])
+        board_2.set_opacity(0.5)
+
+
+        policy_label=Text("POLICY", font="Myriad Pro", weight='bold', font_size=44)
+        policy_label.set_color(YELLOW)
+        policy_label.move_to([0, -3.5, 0])
+
+        state_label=Text("STATE", font="Myriad Pro", weight='bold', font_size=44)
+        state_label.set_color(YELLOW)
+        state_label.move_to([-4, -0.2, 0])
+
+        action_label=Text("ACTION", font="Myriad Pro", weight='bold', font_size=44)
+        action_label.set_color(YELLOW)
+        action_label.move_to([4, -0.2, 0])
+
+        self.wait()
+        self.play(FadeIn(policy_label), 
+                  FadeIn(state_label), 
+                  FadeIn(action_label), 
+                  FadeIn(arrow_in), 
+                  FadeIn(arrow_out))
+
+        self.wait()
+
+        self.play(state_label.animate.move_to([-5, -2.5, 0]), run_time=2)
+        self.add(board_1)
+        self.wait()
+
+
+        
+
+
+        # Yellow square indicating next move at 9, 12 on 
+        # board 2
+        next_move_1=Rectangle(0.2, 0.2)
+        next_move_1.set_stroke(color=YELLOW, width=5)
+        next_move_1.move_to([5.325, -0.13, 0])
+
+        arrow_next_move_1 = Arrow(
+            next_move_1.get_bottom() + DOWN * 0.85,
+            next_move_1.get_bottom(),
+            stroke_width=5,
+            stroke_color=YELLOW,
+            fill_color=YELLOW,
+            buff=0.2,
+        )
+        
+        self.wait()
+        self.play(action_label.animate.move_to([5, -2.5, 0]), run_time=2)
+        self.add(board_2)
+        self.play(ShowCreation(next_move_1), 
+                  ShowCreation(arrow_next_move_1))
+
+        policy_network_label = Text(
+            "POLICY NETWORK",
+            font="Myriad Pro",
+            font_size=42,
+        )
+        policy_network_label.set_color(CHILL_BROWN)
+        policy_network_label.next_to(border, DOWN, buff=0.3)
+
+
+    
+        # Ok, kind of an annoying large amount of stuff to figure out here
+        # One step at a time. 
+
+
+        self.wait()
+        self.remove(state_label, action_label, policy_label, label, arrow_next_move_1)
+        self.play(self.frame.animate.reorient(0, 0, 0, (-0.17, -2.26, 0.0), 12.41),
+                  # FadeOut(state_label),
+                  # FadeOut(action_label),
+                  # FadeOut(policy_label), 
+                  # FadeOut(label), 
+                  board_1.animate.scale(1.2).move_to([-5.4 , -0.3,  0. ]),
+                  board_2.animate.scale(1.2).move_to([5.4 , -0.3,  0. ]),
+                  next_move_1.animate.move_to([ 5.78, -0.11,  0.        ]),
+                  run_time=3
+                 )
+        self.add(policy_network_label)
 
 
 
-        # cnn.rotate(20*DEGREES, axis=UP)
-
-        # cnn.rotate(62*DEGREES, axis=RIGHT) 
-        # cnn.rotate, axis=UP)  
-        # cnn.rotate(-59*DEGREES, axis=OUT)    
-
-
-        self.add(alphago_logo)
-
-
+    
+        self.wait()
 
 
         self.wait(20)
