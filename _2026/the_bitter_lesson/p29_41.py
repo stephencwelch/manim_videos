@@ -626,8 +626,9 @@ class P29_41(InteractiveScene):
         # Ok I think I got it. 
 
         self.remove(board_1, board_2, next_move_1)
+        num_games_to_play=2 ## CRANK UP IN FINAL RENDER
 
-        for game_index in range(12):
+        for game_index in range(num_games_to_play):
 
             p=human_game_files[game_index]
             moves = parse_sgf(p)
@@ -681,7 +682,44 @@ class P29_41(InteractiveScene):
             self.wait()
             self.remove(board_and_stones, board_and_stones_copy)
 
+        
+
+        # Start p32
+        # Move to side and do bar graph
+        # Kinda want to do in manim, but I think premiere is probably the 
+        # move - I think the only animation I really need is the bar graph coming 
+        # up. Ok yeah just made pngs for premiere. Now i just need to 
+        # lost the arrows and move to the side.  Camera move for sure. 
+        # Eh the 3D-ness here is becoming a challenge. 
+        # I think it's time to replace the 3d conv with just and image of it. 
+        # Let me try a dumb screen shot first and see how that goes. 
+        # Alright time for the old switcheroo
+
+
+        conv_raster=ImageMobject(str(svg_dir/'conv_raster.png'))
+        conv_raster.scale(1.135)
+        conv_raster.move_to([-0.1, -0.25, 0])
+        # conv_raster.set_opacity(0.5)
+
         self.wait()
+        self.remove(cnn); self.add(conv_raster)
+        self.play(self.frame.animate.reorient(0, 0, 0, (3.77, 0.08, 0.0), 9.49), 
+                  FadeOut(arrow_in), 
+                  FadeOut(arrow_out),
+                  run_time=4)
+        self.wait()
+
+        #Nice, kinda hacky going to the screenshot, but seems to work fine
+
+
+
+        self.wait(20)
+        self.embed()
+
+
+
+
+
 
 
 
@@ -693,14 +731,6 @@ class P29_41(InteractiveScene):
         # self.add(board_3, board_4)
         # self.wait()
         # self.wait()
-
-
-        self.wait()
-
-        self.wait(20)
-        self.embed()
-
-
 
 
         #Ok that looks nice -> now how do we want to bring in the LLM action?
