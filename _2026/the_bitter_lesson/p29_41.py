@@ -71,17 +71,16 @@ def parse_sgf(file_path):
 
 
 
-def create_stone(x, y, color=BLACK):
+def create_stone(x, y, color=BLACK, squash = 0.3):
     """Create a 3D stone at the given grid position."""
     stone_radius=step*0.45
     pos = [(-(size-1)/2 + x) * step, (-(size-1)/2 + y) * step, 0]
-    squash = 0.3  # How flat the stone is
     
     if color == BLACK:
         stone = Sphere(radius=stone_radius)
         # stone.set_color("#1a1a1a")
         # stone.set_color("#222222")
-        stone.set_color(BLACK)
+        stone.set_color('#000000')
         # stone.set_shading(0.3, 0.8, 0.2)  # ambient, diffuse, specular
         stone.set_shading(0.1, 0.4, 0.1)
     else:  # white
@@ -1382,17 +1381,106 @@ class P37_42(InteractiveScene):
         self.play(Write(value_function_label), run_time=3)
         self.wait()
 
-        #P42 let's go!
+        #P41 let's go!
+        value_network_label = Text(
+            "VALUE NETWORK",
+            font="Myriad Pro",
+            font_size=36,
+        )
+        value_network_label.set_color(GREEN)
+        value_network_label.next_to(border_2, DOWN, buff=0.2)
 
 
+        self.remove(value_function_label, outputs_label_1)
+        self.wait()
+
+        self.play(Write(value_network_label))
+        self.wait()
+
+        # Ok so now I need to cycle through some games. 
+        # Should be able to borrow something from earlier, cycling through games
+
+        self.remove(heatmap)
+
+        self_games_files=sorted(list(self_games_dir.glob('*.sgf')))
+
+
+        num_games_to_play=2 ## CRANK UP IN FINAL RENDER
+        for game_index in range(num_games_to_play):
+        # game_index=0
+
+            p=self_games_files[game_index]
+            moves = parse_sgf(p)
+            moves_to_show=np.random.randint(0, len(moves)-2)
+
+            board_4=get_board()
+            board_4_group=Group()
+            board_4_group.add(board_4)
+
+            board_state = {}  # (x, y) -> color
+            stone_objects = {}  # (x, y) -> Mobject
+            for i, (x, y, color) in enumerate(moves[:moves_to_show]):
+                stone = create_stone(x, y, color)
+                if color=='#000000':
+                    stone.set_shading(0.15, 0.05, 0) #Noodling here to make things consistent-ish
+                board_4_group.add(stone)
+                
+                board_state[(x, y)] = color
+                stone_objects[(x, y)] = stone
+                
+                # Check for captures
+                captured = find_captures(x, y, board_state)
+                for cx, cy in captured:
+                    # Remove from scene and state
+                    board_4_group.remove(stone_objects[(cx, cy)])
+                    del board_state[(cx, cy)]
+                    del stone_objects[(cx, cy)]
+
+            x, y, c = moves[moves_to_show]
+            pos = [(-(size-1)/2 + x) * step, (-(size-1)/2 + y) * step, 0]
+            next_move=Rectangle(0.5, 0.5)
+            next_move.set_stroke(color=YELLOW, width=7)
+            next_move.move_to(pos)
+
+            board_5_group=copy.deepcopy(board_4_group)
+            board_5_group.set_opacity(0.5)
+            board_5_group.add(next_move)
+            next_move.set_opacity(1.0) 
+            
+            board_6_group=copy.deepcopy(board_4_group)
+
+            board_4_group.scale(0.4*1.0)
+            board_4_group.move_to([-12 , -0.05,  0. ])
+            board_5_group.scale(0.4*1.0)
+            board_5_group.move_to([-2.2 , -0.05,  0. ])
+            board_6_group.scale(0.4*1.0)
+            board_6_group.move_to([-12 , -0.05-4.5,  0. ])
+
+            
+            self.wait()
+
+            self.remove(board_1, board_2, board_3)
+            self.add(board_4_group, board_5_group, board_6_group)
+            if game_index==0:
+                self.play(pwin.animate.shift([-0.8, 0, 0]))
+
+            if game_index%2==1: #Kinda ambiguous, I thnk ok to fake here. 
+                pwin_number = Tex('=0.0', font_size=60)
+            else:
+                pwin_number = Tex('=1.0', font_size=60)
+            pwin_number.next_to(pwin, RIGHT, buff=0.2)
+
+            self.add(pwin_number)
+            self.wait()
+
+            if game_index<num_games_to_play-1:
+                self.remove(board_4_group, board_5_group, board_6_group, pwin_number)
 
         self.wait()
 
-
-
-        # value_network.rotate(30*DEGREES, axis=RIGHT) 
-        # value_network.rotate(-30*DEGREES, axis=UP)
-        # value_network.rotate(-15*DEGREES, axis=OUT)
+        ## Hmm yeah when we do get to P42, I am going to want continuity with the 
+        ## little networks sliding to their spots in the MTCS tree. 
+        ## That's going to be kinda annoying, but I think makes sense. 
 
 
 
