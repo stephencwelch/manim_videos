@@ -707,9 +707,90 @@ class P29_41(InteractiveScene):
                   FadeOut(arrow_in), 
                   FadeOut(arrow_out),
                   run_time=4)
+        self.wait() #Ok now premiere!
+
+        # Nice, kinda hacky going to the screenshot, but seems to work fine 
+        # P33 let's go
+
+        ag_group_1=Group(conv_raster, border, policy_network_label, alphago_logo)
+        ag_group_2=copy.deepcopy(ag_group_1)
+
+        # self.remove(ag_group_1)
+        # self.add(ag_group_1)
+
+
+        board_5=get_board()
+
+        # ag_group_1.scale(0.7)
+        # ag_group_1.move_to([-7.2, 0.2, 0])
+
+        ag_1_label=Text('V1', font="Myriad Pro", weight='bold', font_size=32)
+        ag_1_label.set_color(CHILL_BROWN)
+        ag_1_label.move_to([-5.9, -1.4, 0])
+
+        #I can have a little stone now?
+        ag_1_stone=create_stone(0, 0, WHITE)
+        ag_1_stone.scale(0.7)
+        ag_1_stone.move_to([-8.5, -1.4, 0])
+
+        # self.remove(ag_1_stone)
+        # ag_group_2.scale(0.7)
+        # ag_group_2.move_to([7.2, 0.2, 0])
+
+
+        ag_2_label=Text('V2', font="Myriad Pro", weight='bold', font_size=32)
+        ag_2_label.set_color(CHILL_BROWN)
+        ag_2_label.move_to([8.5, -1.4, 0])
+
+        #I can have a little stone now?
+        ag_2_stone=create_stone(0, 0, BLACK)
+        ag_2_stone.scale(0.7)
+        ag_2_stone.move_to([5.85, -1.4, 0])  
+        ag_2_stone.set_shading(0.5, 0.4, 0.2)
+
+        self.wait()
+        self.add(ag_group_2)
+        self.play(self.frame.animate.reorient(0, 0, 0, (0.1, 0.15, 0.0), 11.51), 
+                 ag_group_1.animate.scale(0.7).move_to([-7.2, 0.2, 0]), 
+                 ag_group_2.animate.scale(0.7).move_to([7.2, 0.2, 0]),
+                 run_time=4)
+
+        arrow_ag_1 = Arrow(
+            ag_group_1.get_right() ,
+            ag_group_1.get_right() + RIGHT * 1.2,
+            stroke_width=5,
+            stroke_color=CHILL_BROWN,
+            fill_color=CHILL_BROWN,
+            buff=0.3,
+        )
+        arrow_ag_2 = Arrow(
+            ag_group_2.get_left(),
+            ag_group_2.get_left() + LEFT * 1.2,
+            stroke_width=5,
+            stroke_color=CHILL_BROWN,
+            fill_color=CHILL_BROWN,
+            buff=0.3,
+        )
+
+        self.play(FadeIn(board_5), 
+                  FadeIn(ag_1_label), 
+                  FadeIn(ag_1_stone), 
+                  FadeIn(ag_2_label), 
+                  FadeIn(ag_2_stone), 
+                  FadeIn(arrow_ag_1),
+                  FadeIn(arrow_ag_2))  
+        self.wait()            
+
+
+
+        
+        # self.remove(arrow_ag_1)
+
         self.wait()
 
-        #Nice, kinda hacky going to the screenshot, but seems to work fine
+
+
+
 
 
 
