@@ -388,6 +388,164 @@ def find_captures(x, y, board_state):
     
     return captured
 
+
+def get_value_network():
+        
+    spacing = 0.8
+    cell_size = 0.15
+    layer_size = 19 * cell_size  # Width/height of the 19x19 grid
+    
+    layers = Group()
+    
+    # Create 3 convolutional layers (green)
+    for i in range(3):
+        layer = create_cnn_layer(
+            width=19, 
+            height=19, 
+            cell_size=cell_size, 
+            depth=0.15,
+            fill_color=CHILL_GREEN,
+        )
+        layer.rotate(90 * DEGREES, [1, 0, 0])
+        layer[0].set_color(CHILL_GREEN) #, opacity=0.6)
+        layer[0].set_opacity(0.6)
+        layer[1].set_opacity(0.6)
+        layer.move_to([0, -spacing * i, 0])
+        layers.add(layer)
+    
+    # Position for pyramid base (bottom of last conv layer)
+    last_layer_y = -spacing * 2
+    pyramid_base_y = last_layer_y - 0.15 / 2 - 0.01  # Just below last layer
+    
+    # Position for output cube
+    output_y = last_layer_y - spacing * 1.5
+    
+    # Output cube size
+    output_size = 0.15
+    pyramid_top_y = output_y + output_size / 2 + 0.01
+    
+    # Create pyramid connecting last conv layer to output cube
+    # After rotation, the grid is in the x-z plane
+    half_size = layer_size / 2
+    half_output = output_size / 2
+    
+    # Pyramid vertices - base is the 19x19 layer, top is the small output
+    # Base corners (at pyramid_base_y)
+    base_corners = [
+        np.array([-half_size, pyramid_base_y, -half_size]),  # back-left
+        np.array([half_size, pyramid_base_y, -half_size]),   # back-right
+        np.array([half_size, pyramid_base_y, half_size]),    # front-right
+        np.array([-half_size, pyramid_base_y, half_size]),   # front-left
+    ]
+    
+    # Top corners (at pyramid_top_y) - small square for output cube
+    top_corners = [
+        np.array([-half_output, pyramid_top_y, -half_output]),  # back-left
+        np.array([half_output, pyramid_top_y, -half_output]),   # back-right
+        np.array([half_output, pyramid_top_y, half_output]),    # front-right
+        np.array([-half_output, pyramid_top_y, half_output]),   # front-left
+    ]
+    
+    # Create the 4 trapezoidal faces of the frustum/pyramid
+    pyramid_faces = Group()
+    
+    for i in range(4):
+        next_i = (i + 1) % 4
+        # Each face is a quadrilateral: base[i], base[next_i], top[next_i], top[i]
+        face = Polygon(
+            base_corners[i],
+            base_corners[next_i],
+            top_corners[next_i],
+            top_corners[i],
+        )
+        face.set_fill(CHILL_GREEN, opacity=0.7)
+        face.set_stroke(width=0)  # No borders on pyramid
+        pyramid_faces.add(face)
+    
+    # Add Line3D borders to pyramid edges
+    pyramid_edges = Group()
+    line_width = 0.02
+    
+    # 4 angled edges connecting base to top corners
+    for i in range(4):
+        edge = Line3D(
+            start=base_corners[i],
+            end=top_corners[i],
+            width=line_width,
+            color=WHITE,
+        )
+        pyramid_edges.add(edge)
+    
+    # 4 edges around the top square
+    for i in range(4):
+        next_i = (i + 1) % 4
+        edge = Line3D(
+            start=top_corners[i],
+            end=top_corners[next_i],
+            width=line_width,
+            color=WHITE,
+        )
+        pyramid_edges.add(edge)
+    
+    # Create single output cube with white borders
+    output_cube = Cube(side_length=output_size)
+    output_cube.set_color(CHILL_GREEN)
+    output_cube.move_to([0, output_y, 0])
+    
+    # Add Line3D borders to output cube
+    cube_edges = Group()
+    s = output_size / 2
+    
+    # Define the 8 corners of the cube
+    cube_corners = [
+        np.array([-s, output_y - s, -s]),  # 0: bottom-back-left
+        np.array([s, output_y - s, -s]),   # 1: bottom-back-right
+        np.array([s, output_y - s, s]),    # 2: bottom-front-right
+        np.array([-s, output_y - s, s]),   # 3: bottom-front-left
+        np.array([-s, output_y + s, -s]),  # 4: top-back-left
+        np.array([s, output_y + s, -s]),   # 5: top-back-right
+        np.array([s, output_y + s, s]),    # 6: top-front-right
+        np.array([-s, output_y + s, s]),   # 7: top-front-left
+    ]
+    
+    # Define the 12 edges of the cube (pairs of corner indices)
+    cube_edge_pairs = [
+        # Bottom face
+        (0, 1), (1, 2), (2, 3), (3, 0),
+        # Top face
+        (4, 5), (5, 6), (6, 7), (7, 4),
+        # Vertical edges
+        (0, 4), (1, 5), (2, 6), (3, 7),
+    ]
+    
+    for start_idx, end_idx in cube_edge_pairs:
+        edge = Line3D(
+            start=cube_corners[start_idx],
+            end=cube_corners[end_idx],
+            width=line_width,
+            color=WHITE,
+        )
+        cube_edges.add(edge)
+    
+    # Add everything to scene
+    # self.add(layers, pyramid_faces, pyramid_edges, output_cube, cube_edges)
+    # self.remove(pyramid_faces); self.add(pyramid_faces)
+    # self.remove(cube_edges[6]); self.add(cube_edges[6])
+    # self.remove(cube_edges[7]); self.add(cube_edges[7])
+    # self.remove(cube_edges[11]); self.add(cube_edges[11])
+
+    value_network=Group()
+    value_network.add(layers)
+    value_network.add(pyramid_edges)
+    value_network.add(output_cube)
+    value_network.add(pyramid_faces[1:]) #Super hacky but leave off one side, cuasing occlusion issues 
+    value_network.add(cube_edges)
+
+    return value_network
+
+
+
+
 class P29_36(InteractiveScene):
     def construct(self): 
         '''
@@ -1117,7 +1275,6 @@ class P37_42(InteractiveScene):
         self.frame.reorient(0, 0, 0, (-7.2, -2.21, 0.0), 10.53)
         self.add(ag_group_1)
         
-
         # self.add(board_1, arrow_in, arrow_out, board_2)
         # self.play(ShowCreation(heatmap))
         # self.add(state_label, action_label)
@@ -1132,6 +1289,119 @@ class P37_42(InteractiveScene):
                   ShowCreation(heatmap), 
                   run_time=3)
         self.wait()
+
+
+        #Now start building out bottom row. 
+        border_2 = RoundedRectangle(
+            width=4.8,
+            height=4.8,
+            corner_radius=0.2,
+            stroke_color=CHILL_BROWN,
+            stroke_width=5,
+            fill_opacity=0,
+        )
+        border_2.scale(0.7)
+        border_2.move_to([-7.2, -4.5, 0])
+
+        board_3=render_example_go_game_1()
+        board_3.scale(0.4*1.0)
+        board_3.move_to([-12 , -0.05-4.5,  0. ])
+
+        state_label_2=Text("STATE", font="Myriad Pro", weight='bold', font_size=44)
+        state_label_2.set_color(CHILL_BROWN)
+        state_label_2.move_to([-12 , -2.1-4.5,  0. ])
+
+        arrow_in_2 = Arrow(
+            border_2.get_left() + LEFT * 1.4,
+            border_2.get_left(),
+            stroke_width=5,
+            stroke_color=CHILL_BROWN,
+            fill_color=CHILL_BROWN,
+            buff=0.4,
+        )
+        
+        arrow_out_2 = Arrow(
+            border_2.get_right(),
+            border_2.get_right() + RIGHT * 1.4,
+            stroke_width=5,
+            stroke_color=CHILL_BROWN,
+            fill_color=CHILL_BROWN,
+            buff=0.4,
+        )
+
+
+        outputs_label_1=Text('Quality of board position', font='Georgia', slant='ITALIC', font_size=32)
+        outputs_label_1.set_color(FRESH_TAN)
+        outputs_label_1.move_to([-2, -4.5, 0])
+
+        value_network=get_value_network()
+        value_network.scale(0.72)
+        value_network.rotate(90*DEGREES, axis=OUT) 
+        value_network.rotate(-10*DEGREES, axis=OUT) 
+        value_network.rotate(15*DEGREES, axis=RIGHT) 
+        value_network.rotate(-30*DEGREES, axis=UP)
+        value_network.move_to([-7.1, -4.4, 0])
+
+
+        self.wait()
+        self.play(FadeIn(border_2), 
+                  FadeIn(board_3), 
+                  FadeIn(state_label_2), 
+                  FadeIn(arrow_in_2),
+                  FadeIn(arrow_out_2),
+                  # FadeIn(outputs_label_1),
+                  ShowCreation(value_network),
+                  run_time=4)
+        self.wait()
+
+        # self.remove(value_network[3])
+        # self.add(value_network[3][-])
+        self.play(Write(outputs_label_1), run_time=3)
+        self.wait()
+
+        #Ok now move this down and Write in P(Win)
+        pwin=Tex(r'P(\text{win})', font_size=60)
+        pwin.move_to([[-2, -4.5, 0]])
+
+
+        self.wait()
+        self.play(outputs_label_1.animate.move_to([-2, -5.4, 0]), run_time=3)
+        self.play(Write(pwin),
+                  run_time=3)
+        self.wait()
+
+        
+        value_function_label = Text(
+            "VALUE FUNCTION",
+            font="Myriad Pro",
+            font_size=42,
+        )
+        value_function_label.set_color(GREEN)
+        value_function_label.next_to(border_2, DOWN, buff=0.3)
+
+        self.play(Write(value_function_label), run_time=3)
+        self.wait()
+
+        #P42 let's go!
+
+
+
+        self.wait()
+
+
+
+        # value_network.rotate(30*DEGREES, axis=RIGHT) 
+        # value_network.rotate(-30*DEGREES, axis=UP)
+        # value_network.rotate(-15*DEGREES, axis=OUT)
+
+
+
+
+
+
+        
+
+
 
 
         self.wait(20)
