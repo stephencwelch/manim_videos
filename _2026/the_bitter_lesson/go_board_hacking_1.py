@@ -269,6 +269,18 @@ class GoHackingTwo(InteractiveScene):
 
 
         self.remove(board_rect, lines,  hoshi_dots)
+        
+
+        # self.add(stone)
+        # stone.set_color('#222222')
+        # stone.set_shading(0.05, 0.4, 0.1)
+
+
+        # self.frame.reorient(0, 0, 0, (0.87, 0.84, 0.0), 0.66)
+        # self.wait()
+
+
+
 
         self.wait(20)
         self.embed()
