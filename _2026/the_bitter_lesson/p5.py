@@ -32,9 +32,9 @@ class P5b(InteractiveScene):
 
 
         '''
+        axes_width = 9 #Initial axis width
+
         sample_rate, data = wavfile.read(audio_fn)
-
-
         data = data / np.max(np.abs(data))
         
         # Downsample for plotting (adjust factor as needed)
@@ -51,7 +51,7 @@ class P5b(InteractiveScene):
         axes = Axes(
             x_range=[0, duration, duration/4],
             y_range=[-1, 1, 0.5],
-            width=12,
+            width=axes_width,
             height=2.5,
             axis_config={
                 "color": CHILL_BROWN,
@@ -72,11 +72,11 @@ class P5b(InteractiveScene):
         self.add(waveform)
 
         N = 20
-        #Uncomment for final render
-        # for i in range(N, len(data_ds), N):
-        #     points = [axes.c2p(t[j], data_ds[j]) for j in range(i)]
-        #     waveform.set_points_as_corners(points)
-        #     self.wait(1/30) 
+        ## Uncomment for final render
+        for i in range(N, len(data_ds), N):
+            points = [axes.c2p(t[j], data_ds[j]) for j in range(i)]
+            waveform.set_points_as_corners(points)
+            self.wait(1/30) 
         
         # Final frame with all samples
         points = [axes.c2p(t[j], data_ds[j]) for j in range(len(data_ds))]
@@ -98,17 +98,17 @@ class P5b(InteractiveScene):
         
         # Get scaling info from axes
         axes_left = axes.c2p(0, 0)[0]
-        axes_width = 12
         y_center = axes.c2p(0, 0)[1]
         y_scale = axes.c2p(0, 1)[1] - y_center
-        
         total_samples = len(data_ds)
 
+        num_steps=30
+        spacing=0.3
+
         self.wait()
-        
         self.remove(waveform)
         # gap_width = 0.3  # scene units between blocks
-        for gap_width in np.linspace(0, 0.35, 10):
+        for count, gap_width in enumerate(np.linspace(0, spacing, num_steps)):
             segments = VGroup()
             x_cursor = axes_left
             
@@ -133,17 +133,23 @@ class P5b(InteractiveScene):
                 segments.add(seg)
                 x_cursor += seg_width + gap_width
 
-            total_new_width = x_cursor - axes_left - gap_width  # subtract last gap
-            scale_factor = axes_width / total_new_width
-            segments.scale(scale_factor, about_point=axes.c2p(0, 0))
+            # total_new_width = x_cursor - axes_left - gap_width  # subtract last gap
+            # scale_factor = axes_width / total_new_width
+            # segments.scale(scale_factor, about_point=axes.c2p(0, 0))
             segments.move_to(axes.get_center())
 
             self.add(segments)
             self.wait()
-            self.remove(segments)
+            if count<num_steps-1:
+                self.remove(segments)
+
 
         
-        
+        self.wait()
+
+
+
+
 
         self.wait(20)
         self.embed()
