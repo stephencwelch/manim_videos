@@ -84,13 +84,66 @@ class P5b(InteractiveScene):
 
         self.wait()
 
+        #Ok, matthew is going to provide exact cutpoints, let me fake a few for now
+        cut_points=[0, 3000, 7000, 10000, 12000, 15000, 17000, 22000, 33000, 40000, 44000, 50000]
 
 
+        # Convert to downsampled indices
+        cut_points_ds = [cp // downsample_factor for cp in cut_points]
+
+        # Make sure we cover all data
+        if cut_points_ds[-1] < len(data_ds):
+            cut_points_ds.append(len(data_ds))
 
         
+        # Get scaling info from axes
+        axes_left = axes.c2p(0, 0)[0]
+        axes_width = 12
+        y_center = axes.c2p(0, 0)[1]
+        y_scale = axes.c2p(0, 1)[1] - y_center
+        
+        total_samples = len(data_ds)
 
+        self.wait()
+        
+        self.remove(waveform)
+        # gap_width = 0.3  # scene units between blocks
+        for gap_width in np.linspace(0, 0.35, 10):
+            segments = VGroup()
+            x_cursor = axes_left
+            
+            for i in range(len(cut_points_ds) - 1):
+                start_idx = cut_points_ds[i]
+                end_idx = cut_points_ds[i + 1]
+                n_samples = end_idx - start_idx
+                
+                # Width proportional to sample count
+                seg_width = (n_samples / total_samples) * axes_width
+                
+                segment_data = data_ds[start_idx:end_idx]
+                
+                seg = VMobject()
+                seg.set_stroke(BLUE, width=3)
+                
+                local_x = np.linspace(0, seg_width, n_samples)
+                points = [[x_cursor + local_x[j], y_center + segment_data[j] * y_scale, 0] 
+                          for j in range(n_samples)]
+                seg.set_points_as_corners(points)
+                
+                segments.add(seg)
+                x_cursor += seg_width + gap_width
 
+            total_new_width = x_cursor - axes_left - gap_width  # subtract last gap
+            scale_factor = axes_width / total_new_width
+            segments.scale(scale_factor, about_point=axes.c2p(0, 0))
+            segments.move_to(axes.get_center())
 
+            self.add(segments)
+            self.wait()
+            self.remove(segments)
+
+        
+        
 
         self.wait(20)
         self.embed()
