@@ -21,6 +21,7 @@ SCALE_FACTOR=0.4
 
 
 audio_fn='/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/exports/tell_me_about_china.wav'
+spectra_path='/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/hacking/spectral_envelopes_final.npy'
 
 
 class P5b(InteractiveScene):
@@ -72,11 +73,11 @@ class P5b(InteractiveScene):
         self.add(waveform)
 
         N = 20
-        ## Uncomment for final render
-        for i in range(N, len(data_ds), N):
-            points = [axes.c2p(t[j], data_ds[j]) for j in range(i)]
-            waveform.set_points_as_corners(points)
-            self.wait(1/30) 
+        ## Audio "playing in" - Uncomment for final render
+        # for i in range(N, len(data_ds), N):
+        #     points = [axes.c2p(t[j], data_ds[j]) for j in range(i)]
+        #     waveform.set_points_as_corners(points)
+        #     self.wait(1/30) 
         
         # Final frame with all samples
         points = [axes.c2p(t[j], data_ds[j]) for j in range(len(data_ds))]
@@ -85,8 +86,8 @@ class P5b(InteractiveScene):
         self.wait()
 
         #Ok, matthew is going to provide exact cutpoints, let me fake a few for now
-        cut_points=[0, 3000, 7000, 10000, 12000, 15000, 17000, 22000, 33000, 40000, 44000, 50000]
-
+        cut_points=[0, 4500, 12000, 15500, 19000, 21500, 25000, 31500, 35000, 40500, 46000, 51500]
+        phones_1=["T", "EL", "M", "IY", "AH", "B", "AW", "T", "SH", "AY", "N", "UH"]
 
         # Convert to downsampled indices
         cut_points_ds = [cp // downsample_factor for cp in cut_points]
@@ -103,7 +104,7 @@ class P5b(InteractiveScene):
         total_samples = len(data_ds)
 
         num_steps=30
-        spacing=0.3
+        spacing=0.35
 
         self.wait()
         self.remove(waveform)
@@ -136,16 +137,73 @@ class P5b(InteractiveScene):
             # total_new_width = x_cursor - axes_left - gap_width  # subtract last gap
             # scale_factor = axes_width / total_new_width
             # segments.scale(scale_factor, about_point=axes.c2p(0, 0))
-            segments.move_to(axes.get_center())
+            # segments.move_to(axes.get_center())
+            segments.set_x(axes.get_x())
 
             self.add(segments)
             self.wait()
             if count<num_steps-1:
                 self.remove(segments)
 
-
-        
         self.wait()
+
+        # Ok that's nice, now I need 12 little spectrograms. 
+        # I think it's going to make the most sense to space them evenly
+        # instead of trying to line them up with each audio chunk
+        # I can add arrows connecting wavesforms to spectograms, probably in 
+        # illustrator. Or I can warp each chunk to make them even in the 
+        # previous step -> we'l see what make sense here!
+
+        spectral_envelope_outputs_loaded = np.load(spectra_path, allow_pickle=True)
+        spectral_envelopes_loaded_dict = spectral_envelope_outputs_loaded.item()
+
+        phone_keys = ["stephen_tell_T", "stephen_tell_EL", 
+                       "stephen_me_M", "stephen_me_IY", "stephen_about_A", 
+                       "stephen_about_B", "stephen_about_AW", "stephen_about_T", 
+                       "stephen_china_SH", "stephen_china_AY", "stephen_china_N", 
+                       "stephen_china_UH"]
+
+        horizontal_spacing = 1.1
+
+        spectra_plots=Group()
+        for count, phone_key in enumerate(phone_keys):
+
+            axes_2 = Axes(
+                x_range=[0, 25000, 5000],
+                y_range=[0, 1, 0.5],
+                width=0.9,
+                height=0.6,
+                axis_config={
+                    "color": CHILL_BROWN,
+                    "stroke_width": 2.0,
+                    "include_ticks": False,
+                    "include_tip": True,
+                    "tip_config": {"width":0.01, "length":0.01}
+                },
+            )
+            axes_2.move_to([-6+horizontal_spacing*count, 1, 0])
+
+            curr_result = spectral_envelopes_loaded_dict.get(phone_key)
+            w=curr_result.get("w")
+            lpc_envelope = curr_result.get("lpc_envelope"),
+            s=np.log10(lpc_envelope / np.max(lpc_envelope))[0]
+            s=(s-s.min())/(s.max()-s.min())
+
+            spectra_1 = VMobject()
+            spectra_1.set_stroke(BLUE, width=4)
+
+            points = [axes_2.c2p(w[j], s[j]) for j in range(len(s))]
+            spectra_1.set_points_as_corners(points)
+
+            spectra_plot=Group()
+            spectra_plot.add(axes_2)
+            spectra_plot.add(spectra_1)
+            spectra_plots.add(spectra_plot)
+
+        self.wait()
+
+
+        self.add(spectra_plots)
 
 
 
