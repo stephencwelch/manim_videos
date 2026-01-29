@@ -321,7 +321,7 @@ class P5(InteractiveScene):
                 s=(s-s.min())/(s.max()-s.min())
 
                 spectra_1 = VMobject()
-                spectra_1.set_stroke(BLUE, width=5)
+                spectra_1.set_stroke(YELLOW, width=4)
 
                 points = [axes.c2p(w[j], s[j]) for j in range(len(s))]
                 spectra_1.set_points_as_corners(points)
@@ -393,9 +393,13 @@ class P5(InteractiveScene):
                   run_time=5)
         self.wait(0)
 
-        self.play(self.frame.animate.reorient(0, 0, 0, (-0.08, 3.81, 0.0), 18.49),
+        self.play(self.frame.animate.reorient(0, 0, 0, (-0.08, 2.77, 0.0), 17.74),
                  run_time=5)
         self.wait()
+
+
+        # self.frame.reorient(0, 0, 0, (-0.08, 3.68, 0.0), 17.74)
+        # self.frame.reorient(0, 0, 0, (-0.08, 2.77, 0.0), 17.74)
 
 
         ## --- Ok! Now we can introduce some waveform action!
@@ -424,7 +428,7 @@ class P5(InteractiveScene):
                 "tip_config": {"width":0.02, "length":0.02}
             },
         )
-        axes.move_to([0, 10.5, 0])
+        axes.move_to([0, 9, 0])
         # self.add(axes)
         
         waveform = VMobject()
@@ -510,10 +514,88 @@ class P5(InteractiveScene):
         self.wait()
         # self.remove(segments)
 
+        #No convert to sepctogrames
+        spectral_envelope_outputs_loaded = np.load(spectra_path, allow_pickle=True)
+        spectral_envelopes_loaded_dict = spectral_envelope_outputs_loaded.item()
+
+        horizontal_spacing = 2.3
+
+        spectra_plots=Group()
+        for count, phone_key in enumerate(spectra_keys_2):
+
+            axes_2 = Axes(
+                x_range=[0, 25000, 5000],
+                y_range=[0, 1, 0.5],
+                width=1.9,
+                height=1.3,
+                axis_config={
+                    "color": CHILL_BROWN,
+                    "stroke_width": 4.0,
+                    "include_ticks": False,
+                    "include_tip": True,
+                    "tip_config": {"width":0.01, "length":0.01}
+                },
+            )
+            axes_2.move_to([-12.7+horizontal_spacing*count, 6.5, 0])
+
+            curr_result = spectral_envelopes_loaded_dict.get(phone_key)
+            w=curr_result.get("w")
+            lpc_envelope = curr_result.get("lpc_envelope"),
+            s=np.log10(lpc_envelope / np.max(lpc_envelope))[0]
+            s=(s-s.min())/(s.max()-s.min())
+
+            spectra_1 = VMobject()
+            spectra_1.set_stroke(BLUE, width=4)
+
+            points = [axes_2.c2p(w[j], s[j]) for j in range(len(s))]
+            spectra_1.set_points_as_corners(points)
+
+            spectra_plot=Group()
+            spectra_plot.add(axes_2)
+            spectra_plot.add(spectra_1)
+            spectra_plots.add(spectra_plot)
+
+        # self.add(spectra_plots)
+        # self.remove(spectra_plots)
+
+        self.wait()
+        segments_copy=segments.copy()
+        for i in range(len(segments)):
+            self.play(ReplacementTransform(segments_copy[i], spectra_plots[i][1]), 
+                      ShowCreation(spectra_plots[i][0]), #axis
+                      run_time=3)
+        self.wait()
 
 
+        # Ok now start doing comparison and building out path in blue or maybe magenta!
+        # So I kinda had two punch ins -> but I think just doing 1 is the way to go
+        # self.play(self.frame.animate.reorient(0, 0, 0, (-5.66, 2.1, 0.0), 11.14),
+        #           run_time=5)
+        # self.wait()
+
+        # self.remove(all_nodes_2[1][1])
+        # self.add(all_nodes_2[1])
+
+        # all_nodes_2[1].get_center()
+
+        # self.remove(spectra_plots[0][0])
+
+        spectra_curve_copy=spectra_plots[0][1].copy()
+        spectra_curve_copy_2=spectra_plots[0][1].copy()
+        self.wait()
+        self.play(spectra_curve_copy.animate.move_to(all_nodes_2[1].get_center()).scale(0.5), 
+                  spectra_curve_copy_2.animate.move_to(all_nodes_2[22].get_center()).scale(0.5), 
+                  self.frame.animate.reorient(0, 0, 0, (-9.17, 0.08, 0.0), 7.06), #Eh?
+                  run_time=7)
+
+        self.wait()
 
 
+        #Ok start to highlight path in majenta i recon?
+        graph_2[0][0].set_color(MAGENTA)
+        graph_2[1][0].set_color(MAGENTA)
+        graph_2[1][1][2].set_color(MAGENTA)
+        graph_2[1][1][3].set_color(MAGENTA)
 
 
 
