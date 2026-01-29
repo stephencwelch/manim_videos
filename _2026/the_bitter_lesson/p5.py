@@ -587,7 +587,6 @@ class P5(InteractiveScene):
                   spectra_curve_copy_2.animate.move_to(all_nodes_2[22].get_center()).scale(0.5), 
                   self.frame.animate.reorient(0, 0, 0, (-9.17, 0.08, 0.0), 7.06), #Eh?
                   run_time=7)
-
         self.wait()
 
 
@@ -596,8 +595,127 @@ class P5(InteractiveScene):
         graph_2[1][0].set_color(MAGENTA)
         graph_2[1][1][2].set_color(MAGENTA)
         graph_2[1][1][3].set_color(MAGENTA)
+        self.wait()
 
 
+        self.play(self.frame.animate.reorient(0, 0, 0, (-8.74, 3.66, 0.0), 7.59), 
+                  run_time=5)
+        self.wait()
+
+        #"EL"
+        spectra_curve_copy=spectra_plots[1][1].copy()
+        spectra_curve_copy_2=spectra_plots[1][1].copy()
+        self.play(spectra_curve_copy.animate.move_to(all_nodes_2[2].get_center()).scale(0.5), 
+                  spectra_curve_copy_2.animate.move_to(all_nodes_2[3].get_center()).scale(0.5), 
+                  run_time=5)
+        self.wait()
+
+        graph_2[0][3].set_color(MAGENTA)
+        graph_2[1][3][2].set_color(MAGENTA)
+        graph_2[1][3][3].set_color(MAGENTA)
+        self.wait()
+
+        #M
+        spectra_curve_copy=spectra_plots[2][1].copy()
+        spectra_curve_copy_2=spectra_plots[2][1].copy()
+        self.play(spectra_curve_copy.animate.move_to(all_nodes_2[4].get_center()).scale(0.5), 
+                  spectra_curve_copy_2.animate.move_to(all_nodes_2[6].get_center()).scale(0.5), 
+                  run_time=5)
+        self.wait()
+
+        graph_2[0][4].set_color(MAGENTA) #Arrow
+        graph_2[1][4][2].set_color(MAGENTA)
+        graph_2[1][4][3].set_color(MAGENTA)
+        self.wait()
+
+        # IY - I guess there's only one option here 
+        # spectra_curve_copy=spectra_plots[3][1].copy()
+        # spectra_curve_copy_2=spectra_plots[3][1].copy()
+        # self.play(spectra_curve_copy.animate.move_to(all_nodes_2[5].get_center()).scale(0.5), 
+        #           spectra_curve_copy_2.animate.move_to(all_nodes_2[7].get_center()).scale(0.5), 
+        #           run_time=5)
+        # self.wait()
+
+        graph_2[0][6].set_color(MAGENTA) #Arrow
+        graph_2[1][5][2].set_color(MAGENTA)
+        graph_2[1][5][3].set_color(MAGENTA)
+        self.wait()
+
+        # Ok since the script goes kinda fast here, I kinda feel like we 
+        # go to the full wide zoom out. 
+        self.play(self.frame.animate.reorient(0, 0, 0, (-0.02, 3.14, 0.0), 17.59), 
+                  run_time=4)
+
+        #A
+        spectra_curve_copy=spectra_plots[4][1].copy()
+        spectra_curve_copy_2=spectra_plots[4][1].copy()
+        self.play(spectra_curve_copy.animate.move_to(all_nodes_2[8].get_center()).scale(0.5), 
+                  spectra_curve_copy_2.animate.move_to(all_nodes_2[10].get_center()).scale(0.5), 
+                  run_time=5)
+        self.wait()
+
+        graph_2[0][9].set_color(MAGENTA) #Arrow
+        graph_2[1][10][2].set_color(MAGENTA)
+        graph_2[1][10][3].set_color(MAGENTA)
+        self.wait()        
+
+        #B
+        graph_2[0][14].set_color(MAGENTA) #Arrow
+        graph_2[1][11][2].set_color(MAGENTA)
+        graph_2[1][11][3].set_color(MAGENTA)
+        self.wait()    
+
+        #AW
+        graph_2[0][15].set_color(MAGENTA) #Arrow
+        graph_2[1][12][2].set_color(MAGENTA)
+        graph_2[1][12][3].set_color(MAGENTA)
+        self.wait()   
+
+        #T
+        graph_2[0][16].set_color(MAGENTA) #Arrow
+        graph_2[1][13][2].set_color(MAGENTA)
+        graph_2[1][13][3].set_color(MAGENTA)
+        self.wait()   
+
+        #SH
+        spectra_curve_copy=spectra_plots[8][1].copy()
+        spectra_curve_copy_2=spectra_plots[8][1].copy()
+        self.play(spectra_curve_copy.animate.move_to(all_nodes_2[14].get_center()).scale(0.5), 
+                  spectra_curve_copy_2.animate.move_to(all_nodes_2[18].get_center()).scale(0.5), 
+                  run_time=5)
+        self.wait()        
+
+        graph_2[0][17].set_color(MAGENTA) #Arrow
+        graph_2[1][14][2].set_color(MAGENTA)
+        graph_2[1][14][3].set_color(MAGENTA)
+        self.wait()   
+
+        #AY
+        graph_2[0][18].set_color(MAGENTA) #Arrow
+        graph_2[1][15][2].set_color(MAGENTA)
+        graph_2[1][15][3].set_color(MAGENTA)
+        self.wait()   
+
+        #N
+        graph_2[0][19].set_color(MAGENTA) #Arrow
+        graph_2[1][16][2].set_color(MAGENTA)
+        graph_2[1][16][3].set_color(MAGENTA)
+        self.wait()   
+
+        #UH
+        graph_2[0][20].set_color(MAGENTA) #Arrow
+        graph_2[1][17][2].set_color(MAGENTA)
+        graph_2[1][17][3].set_color(MAGENTA)
+        self.wait()   
+
+        #END
+        graph_2[0][25].set_color(MAGENTA) #Arrow
+        graph_2[1][40].set_color(MAGENTA)
+        self.wait()    
+
+        # I'm a bit unsure if i want to show matching fo each block or not
+        # It's kinda complicated due to beam search,and I have the footnote
+        # I might leave it like it is for now. 
 
 
         self.wait(20)
