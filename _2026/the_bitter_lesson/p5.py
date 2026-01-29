@@ -24,6 +24,34 @@ audio_fn='/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/exports/
 spectra_path='/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/hacking/spectral_envelopes_final.npy'
 
 
+def get_rect_edge_point(rect, direction):
+    """
+    Get the point on a rectangle's edge in a given direction from its center.
+    direction should be a unit vector.
+    """
+    center = rect.get_center()
+    w = rect.get_width() / 2
+    h = rect.get_height() / 2
+    
+    dx, dy = direction[0], direction[1]
+    
+    # Avoid division by zero
+    if abs(dx) < 1e-8:
+        # Vertical line
+        t = h / abs(dy) if abs(dy) > 1e-8 else 0
+    elif abs(dy) < 1e-8:
+        # Horizontal line
+        t = w / abs(dx)
+    else:
+        # Find intersection with both edges and take the closer one
+        t_x = w / abs(dx)  # time to hit vertical edge
+        t_y = h / abs(dy)  # time to hit horizontal edge
+        t = min(t_x, t_y)
+    
+    return center + t * direction
+
+
+
 class P5b(InteractiveScene):
     def construct(self): 
 
@@ -346,19 +374,47 @@ class P5a(InteractiveScene):
             node.move_to([x*SCALE_FACTOR, y*SCALE_FACTOR, 0])
             node_mobjects[idx] = node
         
+        # # Create arrows
+        # arrows = VGroup()
+        # for start_idx, end_idx in edges:
+        #     start_node = node_mobjects[start_idx]
+        #     end_node = node_mobjects[end_idx]
+            
+        #     arrow = Arrow(
+        #         start_node.get_center(),
+        #         end_node.get_center(),
+        #         buff=0.5,  # keeps arrow from overlapping rounded rects
+        #     )
+        #     arrow.set_color(CHILL_BROWN)
+        #     arrows.add(arrow)
+        
+
         # Create arrows
         arrows = VGroup()
         for start_idx, end_idx in edges:
             start_node = node_mobjects[start_idx]
             end_node = node_mobjects[end_idx]
             
-            arrow = Arrow(
-                start_node.get_center(),
-                end_node.get_center(),
-                buff=0.5,  # keeps arrow from overlapping rounded rects
-            )
+            start_box = start_node[0]  # The RoundedRectangle
+            end_box = end_node[0]
+            
+            # Direction from start to end
+            direction = end_node.get_center() - start_node.get_center()
+            direction = direction / np.linalg.norm(direction)  # normalize
+            
+            # Get edge points
+            start_point = get_rect_edge_point(start_box, direction)
+            end_point = get_rect_edge_point(end_box, -direction)
+            
+            # Small additional buffer for visual breathing room
+            gap = 0.05
+            start_point = start_point + gap * direction
+            end_point = end_point - gap * direction
+            
+            arrow = Arrow(start_point, end_point, buff=0)
             arrow.set_color(CHILL_BROWN)
             arrows.add(arrow)
+
         
         # Group everything
         all_nodes = VGroup(*node_mobjects.values())
