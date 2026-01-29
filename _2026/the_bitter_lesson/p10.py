@@ -497,8 +497,11 @@ class P10v2(Scene):
             node_spacing=1.5,
             node_stroke_color=CHILL_BROWN,
             node_stroke_width=3,
-            arrow_stroke_width=0.25 
+            arrow_stroke_width=0.25
         )
+
+        # Zoom out to see the entire graph
+        self.camera.frame.scale(1.3)
 
         first_layer = graph.layers[0]
 
@@ -546,6 +549,5 @@ class P10v2(Scene):
                 LaggedStart(*next_node_anims, *next_ellipsis_anims, lag_ratio=0.1),
                 run_time=1.5
             )
-            self.wait(0.5)
 
         self.embed()
