@@ -18,7 +18,7 @@ CYAN='#00FFFF'
 MAGENTA='#FF00FF'
 
 SCALE_FACTOR=0.4
-SCALE_FACTOR_2=0.8
+SCALE_FACTOR_2=0.5
 
 
 audio_fn='/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/exports/tell_me_about_china.wav'
@@ -166,6 +166,7 @@ def get_rect_edge_point(rect, direction):
 
 class P5(InteractiveScene):
     def construct(self): 
+        fast=True #False for final render
 
         node_mobjects = {}
         buff = 0.2
@@ -225,10 +226,10 @@ class P5(InteractiveScene):
         nodes_to_trace=[0, 1, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 40]
         for i, n in enumerate(nodes_to_trace): 
             node_mobjects[n].set_color(BLUE)
-            self.wait(0.1)
+            if not fast: self.wait(0.1)
             if i<len(nodes_to_trace)-1:
                 arrow_dict[nodes_to_trace[i], nodes_to_trace[i+1]].set_color(BLUE)
-            self.wait(0.1)
+            if not fast: self.wait(0.1)
         self.wait()
 
         self.play(graph.animate.set_color(CHILL_BROWN))
@@ -238,10 +239,10 @@ class P5(InteractiveScene):
         nodes_to_trace=[0, 1, 3, 4, 5, 10, 11, 12, 13, 18, 19, 20, 21, 40]
         for i, n in enumerate(nodes_to_trace): 
             node_mobjects[n].set_color(BLUE)
-            self.wait(0.1)
+            if not fast: self.wait(0.1)
             if i<len(nodes_to_trace)-1:
                 arrow_dict[nodes_to_trace[i], nodes_to_trace[i+1]].set_color(BLUE)
-            self.wait(0.1)
+            if not fast: self.wait(0.1)
         self.wait()
 
         self.play(graph.animate.set_color(CHILL_BROWN))
@@ -251,10 +252,10 @@ class P5(InteractiveScene):
         nodes_to_trace=[0, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 40]
         for i, n in enumerate(nodes_to_trace): 
             node_mobjects[n].set_color(BLUE)
-            self.wait(0.1)
+            if not fast: self.wait(0.1)
             if i<len(nodes_to_trace)-1:
                 arrow_dict[nodes_to_trace[i], nodes_to_trace[i+1]].set_color(BLUE)
-            self.wait(0.1)
+            if not fast: self.wait(0.1)
         self.wait()
 
         self.play(graph.animate.set_color(CHILL_BROWN))
@@ -265,19 +266,34 @@ class P5(InteractiveScene):
         # for the frequency graph? 
         # Probably makes sense to build the freq graph separately, then come back  
         # And figure out how to animate between them. 
-        self.remove(graph)
+        # self.remove(graph)
 
         spectral_envelope_outputs_loaded = np.load(spectra_path, allow_pickle=True)
         spectral_envelopes_loaded_dict = spectral_envelope_outputs_loaded.item()
 
-        self.wait()
+        # self.wait()
 
         node_mobjects_2 = {}
         buff = 0.2
         for spectra_key, (label, idx, x, y) in zip(spectra_keys_1, nodes):
 
             n=Group()
-            if spectra_key != '':
+            if spectra_key == '':
+                text = Text(label, font="American Typewriter", color=CHILL_BROWN)
+                text.set_color(CHILL_BROWN)
+                box = RoundedRectangle(
+                    width=text.get_width() + 2 * buff,
+                    height=text.get_height() + 2 * buff,
+                    corner_radius=0.15,
+                    color=CHILL_BROWN,
+                )
+                box.set_stroke(width=2)
+                node = VGroup(text, box)
+                # node.move_to([x*SCALE_FACTOR, y*SCALE_FACTOR, 0])
+                node.move_to([x*SCALE_FACTOR_2-12, y*SCALE_FACTOR_2, 0])
+                node_mobjects_2[idx] = node
+
+            else:
                 axes = Axes(
                     x_range=[0, 25000, 5000],
                     y_range=[0, 1, 0.5],
@@ -285,13 +301,12 @@ class P5(InteractiveScene):
                     height=0.6,
                     axis_config={
                         "color": CHILL_BROWN,
-                        "stroke_width": 2.0,
+                        "stroke_width": 3.0,
                         "include_ticks": False,
                         "include_tip": True,
                         "tip_config": {"width":0.01, "length":0.01}
                     },
                 )
-                axes.move_to([x*SCALE_FACTOR, y*SCALE_FACTOR, 0])
 
                 curr_result = spectral_envelopes_loaded_dict.get(spectra_key)
                 w=curr_result.get("w")
@@ -300,7 +315,7 @@ class P5(InteractiveScene):
                 s=(s-s.min())/(s.max()-s.min())
 
                 spectra_1 = VMobject()
-                spectra_1.set_stroke(BLUE, width=4)
+                spectra_1.set_stroke(BLUE, width=5)
 
                 points = [axes.c2p(w[j], s[j]) for j in range(len(s))]
                 spectra_1.set_points_as_corners(points)
@@ -311,35 +326,86 @@ class P5(InteractiveScene):
 
                 text = Text(label, font="American Typewriter", color=CHILL_BROWN)
                 text.set_color(CHILL_BROWN)
+                text.scale(0.8)
+
+                box = RoundedRectangle(
+                    width=axes.get_width() + 2 * buff,
+                    height=axes.get_height() + 2 * buff,
+                    corner_radius=0.15,
+                    color=CHILL_BROWN,
+                )
+                box.set_stroke(width=2)
+
+                node = VGroup(axes, spectra_1, text, box)
+                node.move_to([x*SCALE_FACTOR_2-12, y*SCALE_FACTOR_2, 0])
+                text.move_to([x*SCALE_FACTOR_2+0.25-12, y*SCALE_FACTOR_2+0.2, 0])
+                node_mobjects_2[idx] = node
+
+
+        arrows_2 = VGroup()
+        arrow_dict_2={}
+        for start_idx, end_idx in edges:
+            start_node = node_mobjects_2[start_idx]
+            end_node = node_mobjects_2[end_idx]
+            
+            start_box = start_node[-1]  # The RoundedRectangle
+            end_box = end_node[-1]
+            
+            # Direction from start to end
+            direction = end_node.get_center() - start_node.get_center()
+            direction = direction / np.linalg.norm(direction)  # normalize
+            
+            # Get edge points
+            start_point = get_rect_edge_point(start_box, direction)
+            end_point = get_rect_edge_point(end_box, -direction)
+            
+            # Small additional buffer for visual breathing room
+            gap = 0.05
+            start_point = start_point + gap * direction
+            end_point = end_point - gap * direction
+            
+            arrow = Arrow(start_point, end_point, buff=0)
+            arrow.set_color(CHILL_BROWN)
+            arrows_2.add(arrow)
+            arrow_dict_2[(start_idx, end_idx)]=arrow
+
+        # Group everything
+        all_nodes_2 = VGroup(*node_mobjects_2.values())
+        graph_2 = VGroup(arrows_2, all_nodes_2)
+        graph_2.center()
+
+
+        self.wait()
+        #Hell yeah - so this not perfect, but I think totally workable, and easy!
+        self.play(ReplacementTransform(graph, graph_2), 
+                 self.frame.animate.reorient(0, 0, 0, (0.18, 0.5, 0.0), 18.15), 
+                 run_time=5)
+        self.wait()
+
+
+        self.play(self.frame.animate.reorient(0, 0, 0, (-7.31, 0.11, 0.0), 9.90), 
+                  run_time=5)
+        self.wait(0)
+
+        self.play(self.frame.animate.reorient(0, 0, 0, (-0.08, 3.81, 0.0), 18.49),
+                 run_time=5)
+        self.wait()
 
 
 
 
+        # self.remove(graph_2)
 
+        # for i in range(len(node_mobjects_2)):
+        #     self.add(node_mobjects_2[i])
 
-
-
-
-
-
-            # box = RoundedRectangle(
-            #     width=text.get_width() + 2 * buff,
-            #     height=text.get_height() + 2 * buff,
-            #     corner_radius=0.15,
-            #     color=CHILL_BROWN,
-            # )
-            # node = VGroup(box, text)
-            # node.move_to([x*SCALE_FACTOR, y*SCALE_FACTOR, 0])
-            # node_mobjects_2[idx] = node
+        # node_mobjects_2[1].shift([-5, 0, 0])
 
 
 
         self.wait()
 
-        for i in range(1, 40):
-            self.add(node_mobjects_2[i])
-
-
+        self.frame.reorient(0, 0, 0, (0.18, 0.5, 0.0), 18.15)
 
 
 
