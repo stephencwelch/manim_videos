@@ -18,6 +18,7 @@ CYAN='#00FFFF'
 MAGENTA='#FF00FF'
 
 SCALE_FACTOR=0.4
+SCALE_FACTOR_2=0.8
 
 
 audio_fn='/Users/stephen/Stephencwelch Dropbox/welch_labs/bitter_lesson/exports/tell_me_about_china.wav'
@@ -67,7 +68,18 @@ nodes=[['start', 0, 0, 0],
        ['end',   40, 58, 0]
        ]
 
-
+#Matches order of nodes
+spectra_keys_1=['', 'mc_sent1_tell_T', 'mc_sent1_tell_AH', 'mc_sent1_tell_EL', 
+                'mc_sent1_me_M', 'mc_sent1_me_IY', 'mc_sent1_us_IH', 'mc_sent1_us_S', 
+                'mc_sent1_all_OW', 'mc_sent1_all_EL', 'mc_sent1_about_A', 
+                'mc_sent1_about_B', 'mc_sent1_about_AW', 'mc_sent1_about_T', 
+                'mc_sent1_china_SH', 'mc_sent1_china_AY', 'mc_sent1_china_N', 'mc_sent1_china_UH', 
+                'mc_sent1_nixon_N', 'mc_sent1_nixon_IH', 'mc_sent1_nixon_X', 'mc_sent1_nixon_EN', 
+                'mc_sent2_give_G', 'mc_sent2_give_IH', 'mc_sent2_give_V', 
+                'mc_sent2_me_M', 'mc_sent2_me_IY', 
+                'mc_sent2_the_TH', 'mc_sent2_the_UH', 'mc_sent2_the_UH', #Duplicated for EE
+                'mc_sent2_headlines_H', 'mc_sent2_headlines_AA', 'mc_sent2_headlines_D', 'mc_sent2_headlines_L', 'mc_sent2_headlines_AY', 'mc_sent2_headlines_N', 'mc_sent2_headlines_S',
+                'mc_sent2_news_N', 'mc_sent2_news_OO', 'mc_sent2_news_S', '']
 
 edges=[[0, 1], 
           [1, 2],
@@ -245,10 +257,87 @@ class P5(InteractiveScene):
             self.wait(0.1)
         self.wait()
 
-        
+        self.play(graph.animate.set_color(CHILL_BROWN))
+
+        # Ok now stuff is going to get kinda crazy! It's time to add little freq 
+        # curves inside each node! No idea how this is going to work with spacing etc.
+        # So i feel like it might not be insane to just evenly dilate the spacing 
+        # for the frequency graph? 
+        # Probably makes sense to build the freq graph separately, then come back  
+        # And figure out how to animate between them. 
+        self.remove(graph)
+
+        spectral_envelope_outputs_loaded = np.load(spectra_path, allow_pickle=True)
+        spectral_envelopes_loaded_dict = spectral_envelope_outputs_loaded.item()
+
+        self.wait()
+
+        node_mobjects_2 = {}
+        buff = 0.2
+        for spectra_key, (label, idx, x, y) in zip(spectra_keys_1, nodes):
+
+            n=Group()
+            if spectra_key != '':
+                axes = Axes(
+                    x_range=[0, 25000, 5000],
+                    y_range=[0, 1, 0.5],
+                    width=0.9,
+                    height=0.6,
+                    axis_config={
+                        "color": CHILL_BROWN,
+                        "stroke_width": 2.0,
+                        "include_ticks": False,
+                        "include_tip": True,
+                        "tip_config": {"width":0.01, "length":0.01}
+                    },
+                )
+                axes.move_to([x*SCALE_FACTOR, y*SCALE_FACTOR, 0])
+
+                curr_result = spectral_envelopes_loaded_dict.get(spectra_key)
+                w=curr_result.get("w")
+                lpc_envelope = curr_result.get("lpc_envelope"),
+                s=np.log10(lpc_envelope / np.max(lpc_envelope))[0]
+                s=(s-s.min())/(s.max()-s.min())
+
+                spectra_1 = VMobject()
+                spectra_1.set_stroke(BLUE, width=4)
+
+                points = [axes.c2p(w[j], s[j]) for j in range(len(s))]
+                spectra_1.set_points_as_corners(points)
+
+                n.add(axes)
+                n.add(spectra_1)
+                node_mobjects_2[idx]=n
+
+                text = Text(label, font="American Typewriter", color=CHILL_BROWN)
+                text.set_color(CHILL_BROWN)
 
 
-        
+
+
+
+
+
+
+
+
+
+            # box = RoundedRectangle(
+            #     width=text.get_width() + 2 * buff,
+            #     height=text.get_height() + 2 * buff,
+            #     corner_radius=0.15,
+            #     color=CHILL_BROWN,
+            # )
+            # node = VGroup(box, text)
+            # node.move_to([x*SCALE_FACTOR, y*SCALE_FACTOR, 0])
+            # node_mobjects_2[idx] = node
+
+
+
+        self.wait()
+
+        for i in range(1, 40):
+            self.add(node_mobjects_2[i])
 
 
 
