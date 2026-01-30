@@ -169,6 +169,135 @@ def find_captures(x, y, board_state):
     return captured
 
 
+class GamesGridThree(InteractiveScene):
+    def construct(self):
+        # Grid configuration
+        N = 5  # NxN grid of games
+        spacing = board_width + 1.0  # Space between board centers
+        
+        # Camera start and end positions
+        # Format: theta, phi, gamma, (center_x, center_y, center_z), height
+        # cam_start = (0, 0, 0, (0, 0, 0), 30)  # Start: top-down view, zoomed out
+        
+        # cam_end = (0, 0, 0, (-0.11, -2.82, 0.0), 13.77)  # End position
+
+        #For 8x8
+        # cam_start =(42, 53, 0, (-1.75, 0.64, 2.08), 5.56)
+        # cam_end = (0, 0, 0, (-0.93, -0.67, 0.0), 75.13)
+
+        # 5x4 
+        cam_start=(44, 49, 0, (0.49, -0.77, -1.31), 8.91)
+        cam_end=(0, 0, 0, (-0.56, -0.14, 0.0), 46.47)
+        
+        # Load game files
+        self_games_files = sorted(list(self_games_dir.glob('*.sgf')))+sorted(list(self_games_dir.glob('*.sgf')))
+        
+        # Make sure we have enough games
+        num_games = N * N
+        if len(self_games_files) < num_games:
+            print(f"Warning: Only {len(self_games_files)} games available, need {num_games}")
+            # Cycle through available games if not enough
+            while len(self_games_files) < num_games:
+                self_games_files = self_games_files + self_games_files
+        
+        # Parse all games
+        all_moves = []
+        for i in range(num_games):
+            moves = parse_sgf(self_games_files[i])
+            all_moves.append(moves)
+        
+        # Find the maximum number of moves across all games
+        max_moves = max(len(moves) for moves in all_moves)
+        
+        # Create boards and position them in a grid
+        board_groups = []
+        board_states = []
+        stone_objects_list = []
+        
+        for row in range(N):
+            for col in range(N):
+                board = get_board()
+                board_group = Group()
+                board_group.add(board)
+                
+                # Position the board in the grid
+                # Center the grid around origin
+                offset_x = (col - (N - 1) / 2) * spacing
+                offset_y = (row - (N - 1) / 2) * spacing
+                board_group.move_to([offset_x, offset_y, 0])
+                
+                self.add(board_group)
+                board_groups.append(board_group)
+                board_states.append({})  # (x, y) -> color
+                stone_objects_list.append({})  # (x, y) -> Mobject
+        
+        # Set initial camera position
+        self.frame.reorient(cam_start[0], cam_start[1], cam_start[2], cam_start[3], cam_start[4])
+        
+        # Play all games simultaneously with camera movement
+        # Camera updates more frequently than board moves for smooth motion
+        camera_steps_per_move = 10
+        total_camera_steps = max_moves * camera_steps_per_move
+        
+        self.wait()
+        for step_idx in range(total_camera_steps):
+            # Calculate interpolation factor for camera
+            t = step_idx / max(total_camera_steps - 1, 1)
+            
+            # Interpolate camera parameters
+            theta = cam_start[0] + t * (cam_end[0] - cam_start[0])
+            phi = cam_start[1] + t * (cam_end[1] - cam_start[1])
+            gamma = cam_start[2] + t * (cam_end[2] - cam_start[2])
+            center_x = cam_start[3][0] + t * (cam_end[3][0] - cam_start[3][0])
+            center_y = cam_start[3][1] + t * (cam_end[3][1] - cam_start[3][1])
+            center_z = cam_start[3][2] + t * (cam_end[3][2] - cam_start[3][2])
+            height = cam_start[4] + t * (cam_end[4] - cam_start[4])
+            
+            # Update camera
+            self.frame.reorient(theta, phi, gamma, (center_x, center_y, center_z), height)
+            
+            # Only update boards every camera_steps_per_move steps
+            if step_idx % camera_steps_per_move == 0:
+                move_idx = step_idx // camera_steps_per_move
+                
+                # Update each game
+                for game_idx in range(num_games):
+                    moves = all_moves[game_idx]
+                    
+                    # Skip if this game has no more moves
+                    if move_idx >= len(moves):
+                        continue
+                    
+                    x, y, color = moves[move_idx]
+                    board_group = board_groups[game_idx]
+                    board_state = board_states[game_idx]
+                    stone_objects = stone_objects_list[game_idx]
+                    
+                    # Create stone at local position
+                    stone = create_stone(x, y, color)
+                    if color == '#000000':
+                        stone.set_shading(0.15, 0.05, 0)
+                    
+                    # Get board offset to position stone correctly
+                    board_center = board_group.get_center()
+                    stone.shift(board_center)
+                    
+                    board_group.add(stone)
+                    
+                    board_state[(x, y)] = color
+                    stone_objects[(x, y)] = stone
+                    
+                    # Check for captures
+                    captured = find_captures(x, y, board_state)
+                    for cx, cy in captured:
+                        # Remove from scene and state
+                        board_group.remove(stone_objects[(cx, cy)])
+                        del board_state[(cx, cy)]
+                        del stone_objects[(cx, cy)]
+            
+            self.wait(0.01)
+
+
 class GamesGridTwo(InteractiveScene):
     def construct(self):
         # Grid configuration
