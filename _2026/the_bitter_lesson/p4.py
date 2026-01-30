@@ -221,8 +221,23 @@ def nudge_neighbors(all_nodes_list, num_graph_walks=2, neighbor_buffer=1.0, nudg
     
     return nodes
 
+def copy_frame_positioning_precise(frame):
+    center = frame.get_center()
+    height = frame.get_height()
+    angles = frame.get_euler_angles()
 
-class RenderNetworkV2(Scene):
+    call = f"reorient("
+    theta, phi, gamma = (angles / DEG)
+    call += f"{theta}, {phi}, {gamma}"
+    if any(center != 0):
+        call += f", {tuple(center)}"
+    if height != FRAME_HEIGHT:
+        call += ", {:.2f}".format(height)
+    call += ")"
+    print(call)
+    pyperclip.copy(call)
+
+class P4a(Scene):
     def construct(self):
         with open(json_dir/"phone_dag_v2.json", "r") as f:
             data = json.load(f)
@@ -342,16 +357,22 @@ class RenderNetworkV2(Scene):
 
         self.wait()
 
+        #Option 1 -> wide angle side view.
+        self.frame.reorient(54.702143403436715, 52.815862596421724, 0.0, (-38.418354, -57.3952, -45.180237), 291.11)
+        self.wait()
+        self.play(self.frame.animate.reorient(0, 0, 0, (-0.11, 0.17, 0.0), 14.76), 
+                 run_time=25)     
 
-
-
-
-        self.frame.reorient(0, 0, 0, (-0.11, 0.17, 0.0), 14.76)
+        # self.frame.reorient(0, 0, 0, (-0.11, 0.17, 0.0), 14.76)
 
 
         self.wait()
-        self.remove(non_priority_nodes_group)
-        self.remove(non_priority_arrows_group)
+        self.play(FadeOut(non_priority_nodes_group),
+                  FadeOut(non_priority_arrows_group), 
+                  run_time=5)
+        self.wait()
+        # self.remove(non_priority_nodes_group)
+        # self.remove(non_priority_arrows_group)
 
 
         self.wait(20)
